@@ -22,7 +22,7 @@ export function useAuth() {
       const korisnik = JSON.parse(localStorage.getItem('korisnik'));
       if (korisnik) {
         state.isLoggedIn = true;
-        state.korisnikUloga = korisnik.uloga;
+        state.korisnikUloga = korisnik.kor_uloga;
         state.korisnik=korisnik;
       } else {
         state.isLoggedIn = false;

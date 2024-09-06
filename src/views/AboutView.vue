@@ -24,6 +24,10 @@
         <input type="text" id="kor_prezime" v-model="korisnik.kor_prezime" required pattern="[A-Za-z ]+" title="Molimo unesite samo slova">
       </div>
       <div class="form-group">
+        <label for="kor_ime_kompanije">Ime kompanije:</label>
+        <input type="text" id="kor_ime_kompanije" v-model="korisnik.kor_ime_kompanije" >
+      </div>
+      <div class="form-group">
         <label for="kor_adresa">Adresa:</label>
         <input type="text" id="kor_adresa" v-model="korisnik.kor_adresa" >
       </div>

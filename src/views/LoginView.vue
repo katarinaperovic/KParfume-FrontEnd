@@ -16,7 +16,7 @@
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
       </div>
       <div class="logged-in" v-else>
-        <p>You are already logged in.</p>
+        <p>Do you want to log out?</p>
         <button @click="logout" class="btn logout">Logout</button>
       </div>
     </div>
