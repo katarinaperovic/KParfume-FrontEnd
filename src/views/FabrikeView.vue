@@ -15,9 +15,12 @@
               <input v-model="novaFabrika.fab_naziv" required>
             </div>
             <div class="input-group">
-              <label>Logo:</label>
-              <input v-model="novaFabrika.fab_logo" required>
-            </div>
+            <label>Logo:</label>
+           
+            <input type="file" @change="onFileSelected" accept="image/*" required>
+          </div>
+
+         
           </div>
           <div class="form-row1">
             <div class="input-group">
@@ -138,7 +141,7 @@
     <div v-for="fabrika in filteredAndSortedFabrike" :key="fabrika.id" :class="['fabrika-item', { 'moja-fabrika': String(korisnikFabrikaId) === String(fabrika.id) }]"
     >
       <div :class="['fabrika-item-border', { 'moja-fabrika-border': korisnikFabrikaId === fabrika.id }]">
-        <img :src="fabrika.fab_logo" class="fabrika-logo" alt="Logo fabrike">
+        <img :src="'https://localhost:44333/resources' + fabrika.fab_logo" class="fabrika-logo" alt="Logo fabrike">
         <div class="fabrika-details">
           
           <p> {{ korisnikFabrikaId}}  </p>
@@ -401,6 +404,30 @@ export default {
       prikaziFormuRadnik.value = { ...prikaziFormuRadnik.value, [fabrikaId]: !prikaziFormuRadnik.value[fabrikaId] };
     }
 
+const onFileSelected = async (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      
+      const response = await axios.post('https://localhost:44333/api/images/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+     
+     
+      novaFabrika.value.fab_logo = response.data.filePath || response.data.path || response.data.url; 
+      console.log(novaFabrika.value.fab_logo);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
+  }
+};
+
    
     const dodajCokoladu = (fabrikaId) => {
       validateCena();
@@ -452,7 +479,7 @@ export default {
     }
 
     function dodajFabriku() {
-  
+      console.log(novaFabrika.value);
   axios.post('https://localhost:44333/api/fabrika', novaFabrika.value)
     .then(response => {
       const fabrikaId = response.data.id; 
@@ -531,7 +558,7 @@ export default {
     return {
       prikaziFormu, novaCokolada, searchQuery, searchChocolate, searchLocation, 
       sortKey, sortOrderAsc,prikaziDetalje, toggleForm, dodajCokoladu, filteredAndSortedFabrike,showNewFactoryDialog,novaFabrika,dodajFabriku,user,korisnikUloga,korisnikFabrikaId,
-      dodajRadnika,noviRadnik,prikaziFormuRadnik,toggleFormRadnik,filterMyOnly,today,errors    }
+      dodajRadnika,noviRadnik,prikaziFormuRadnik,toggleFormRadnik,filterMyOnly,today,errors,onFileSelected    }
   }
 }
 </script>
