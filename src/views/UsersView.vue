@@ -152,11 +152,13 @@ function mapUloga(uloga) {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    background-color: rgba(224, 163, 78, 0.5);
+    background-color: rgba(255, 149, 0, 0.5);
+    color: aliceblue;
   }
   
   .filters {
     margin-bottom: 20px;
+    
   }
   
   .filters input,

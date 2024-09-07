@@ -8,22 +8,27 @@
     
     <nav v-if="authState.korisnikUloga === 'administrator' && authState.isLoggedIn" class="navbar stunning-navbar">
       <router-link to="/">Home</router-link>
+      <router-link to="/vesti">Vesti</router-link>
       <router-link to="/login">Logout</router-link>
       <router-link to="/users">Users</router-link>
+
     </nav>
 
     <nav v-if="authState.korisnikUloga === 'menadzer' && authState.isLoggedIn" class="navbar stunning-navbar">
       <router-link to="/">Home</router-link>
+      <router-link to="/vesti">Vesti</router-link>
       <router-link to="/login">Logout</router-link>
     </nav>
 
     <nav v-if="authState.korisnikUloga === 'radnik' && authState.isLoggedIn" class="navbar stunning-navbar">
       <router-link to="/">Home</router-link>
+      <router-link to="/vesti">Vesti</router-link>
       <router-link to="/login">Logout</router-link>
     </nav>
 
     <nav v-if="authState.korisnikUloga === 'kupac' && authState.isLoggedIn" class="navbar stunning-navbar">
       <router-link to="/">Home</router-link>
+      <router-link to="/vesti">Vesti</router-link>
       <router-link to="/login">Logout</router-link>
     </nav>
   </header>

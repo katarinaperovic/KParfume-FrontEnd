@@ -4,6 +4,9 @@ import AboutView from '../views/AboutView.vue';
 import LoginView from '../views/LoginView.vue';
 import FabrikeView from '../views/FabrikeView.vue';
 import UsersView from '../views/UsersView.vue';
+import VestiView from '../views/VestiView.vue';
+
+import NewsDetailView from '../views/NewsDetailView.vue';
 
 const routes = [
   {
@@ -15,6 +18,12 @@ const routes = [
     path: '/login',
     name: 'login',
     component: LoginView
+  },
+  {
+    path: '/vest/:id',
+    name: 'NewsDetail',
+    component: NewsDetailView,
+    props: true
   },
   {
     path: '/registration',
@@ -33,7 +42,14 @@ const routes = [
     path: '/users',
     name: 'users',
     component: UsersView
+  },
+  {
+    path: '/vesti',
+    name: 'vesti',
+    component: VestiView
   }
+  
+  
 ];
 
 const router = createRouter({
