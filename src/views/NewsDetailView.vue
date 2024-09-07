@@ -13,7 +13,10 @@
       <h2>Komentari</h2>
       <div v-if="komentari.length > 0">
         <div v-for="komentar in komentari" :key="komentar.id" class="komentar">
-          <p><strong>{{ komentar.korisnikIme }}</strong> ({{ komentar.kom_datum }}):</p>
+          <p v-if="users[komentar.kom_kor_id]">
+            <strong>{{ users[komentar.kom_kor_id]?.kor_email || 'Nepoznat korisnik' }}</strong> 
+            ({{ komentar.kom_datum }}):
+          </p>
           <p>{{ komentar.kom_tekst }}</p>
           <button class="dbutton" v-if="String(vest.ves_admin_id) === String(korisnikId)" @click="deleteKomentar(String(komentar.id))">
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
@@ -46,6 +49,7 @@
         newComment: '', 
         korisnikId: '', 
         korisnikUloga:'',
+        users: {},
       };
     },
     methods: {
@@ -62,6 +66,23 @@
         try {
           const response = await axios.get(`https://localhost:44333/api/komentar/vest/${this.id}`);
           this.komentari = response.data.value;
+
+           // user details
+        await Promise.all(
+          this.komentari.map(async (komentar) => {
+            if (!this.users[komentar.kom_kor_id]) {
+              
+              const userResponse = await axios.get(
+                `https://localhost:44333/api/users/${komentar.kom_kor_id}`
+              );
+              
+              this.users[komentar.kom_kor_id] = userResponse.data;
+            }
+          })
+        );
+
+
+
           console.log(this.komentari);
         } catch (error) {
           console.error('Error fetching comments:', error);
@@ -156,12 +177,15 @@ button:hover {
   background-color: #45a049;
 }
 .dbutton {
-    background-color: #ff0000;
-    color: white;
-    padding: 10px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  position: absolute;
+  top: 10px; /* Position from the top */
+  right: 10px; /* Position from the right */
+  background-color: #ff0000;
+  color: white;
+  padding: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .dbutton:hover {
@@ -177,6 +201,7 @@ button:hover {
   margin-bottom: 15px;
   border-radius: 8px;
   color: white;
+  position: relative; 
 }
 
 .komentar p {
@@ -185,7 +210,7 @@ button:hover {
 
 .komentar strong {
   font-weight: bold;
-  color: #f1c40f; /* Different color for the user's name */
+  color:#d2d1f1; /* Different color for the user's name */
 }
   </style>
   

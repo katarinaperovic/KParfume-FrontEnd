@@ -58,6 +58,7 @@
 
 <script>
 import axios from 'axios';
+import router from '../router';
 
 export default {
   data() {
@@ -93,7 +94,8 @@ export default {
 
       axios.post('https://localhost:44333/api/users/register', this.korisnik)
         .then(response => {
-          alert('Uspešna registracija!');
+         
+          router.push('/login');
           this.error = null;
           this.resetForm();
         })

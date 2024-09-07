@@ -5,7 +5,8 @@ import LoginView from '../views/LoginView.vue';
 import FabrikeView from '../views/FabrikeView.vue';
 import UsersView from '../views/UsersView.vue';
 import VestiView from '../views/VestiView.vue';
-
+import OceneView from '../views/OceneView.vue';
+import KuponiView from '../views/KuponiView.vue';
 import NewsDetailView from '../views/NewsDetailView.vue';
 
 const routes = [
@@ -47,6 +48,16 @@ const routes = [
     path: '/vesti',
     name: 'vesti',
     component: VestiView
+  },
+  {
+    path: '/ocene',
+    name: 'ocene',
+    component: OceneView
+  },
+  {
+    path: '/kuponi',
+    name: 'kuponi',
+    component: KuponiView
   }
   
   
