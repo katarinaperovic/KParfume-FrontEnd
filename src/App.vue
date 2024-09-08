@@ -37,7 +37,7 @@
   </header>
 
 
-  <button class="rate-app-btn" @click="showRatingForm = true">
+  <button v-if="authState.korisnikUloga !== 'administrator' && authState.isLoggedIn"class="rate-app-btn" @click="showRatingForm = true">
       Ocenite aplikaciju
     </button>
 

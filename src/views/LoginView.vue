@@ -4,7 +4,7 @@
         <h2>Login</h2>
         <form @submit.prevent="login">
           <div class="input-group">
-            <label for="korisnickoIme">Korisničko ime:</label>
+            <label for="korisnickoIme">Email:</label>
             <input type="text" v-model="korisnickoIme" required />
           </div>
           <div class="input-group">
