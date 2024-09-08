@@ -144,7 +144,6 @@
         <img :src="'https://localhost:44333/resources' + fabrika.fab_logo" class="fabrika-logo" alt="Logo fabrike">
         <div class="fabrika-details">
           
-          <p> {{ korisnikFabrikaId}}  </p>
           <h2><strong>{{ fabrika.fab_naziv }}</strong></h2>
           <p> {{ fabrika.fab_adresa }}  </p>
           <p>{{ fabrika.fab_grad }} {{ fabrika.fab_pos_br }}</p>
@@ -161,52 +160,63 @@
               <div class="form-row">
                 <div class="form-group">
                   <label>Naziv:</label>
-                  <input v-model="novaCokolada.naziv" required>
+                  <input v-model="noviParfem.par_naziv" required>
                 </div>
+                <!--
                 <div class="form-group">
                   <label>Cena:</label>
                   <input v-model.number="novaCokolada.cena" required @input="validateCena" title="Molimo unesite broj veći od 0">
                   <span v-if="errors.cena" class="errors">{{ errors.cena }}</span>
+                </div>-->
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Vrsta parfema:</label>
+                  <select v-model="noviParfem.par_vp_id" required>
+                    <option :value="1">cvetni</option>
+                    <option :value="2">orijentalni</option>
+                    <option :value="3">citrusni</option>
+                    <option :value="4">drvenasti</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Tip parfema:</label>
+                  <select v-model="noviParfem.par_tp_id" required>
+                    <option :value="1">zimski</option>
+                    <option :value="2">prolećni</option>
+                    <option :value="3">letnji</option>
+                    <option :value="4">jesenji</option>
+                  </select>
                 </div>
               </div>
               <div class="form-row">
                 <div class="form-group">
-                  <label>Vrsta čokolade:</label>
-                  <select v-model="novaCokolada.vrstaCokolade" required>
-                    <option value="obicna">Obična</option>
-                    <option value="za_kuvanje">Za kuvanje</option>
-                    <option value="za_pice">Za piće</option>
+                  <label>Kategorija:</label>
+                  <select v-model="noviParfem.par_kp_id" required>
+                    <option :value="1">ženski</option>
+                    <option :value="2">muški</option>
+                    <option :value="3">unisex</option>
                   </select>
                 </div>
                 <div class="form-group">
-                  <label>Tip čokolade:</label>
-                  <select v-model="novaCokolada.tipCokolade" required>
-                    <option value="crna">Crna</option>
-                    <option value="mlecna">Mlečna</option>
-                    <option value="bela">Bela</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Gramaza:</label>
-                  <input v-model.number="novaCokolada.gramaza"  required @input="validateGramaza" title="Molimo unesite broj veći od 0">
-                  <span v-if="errors.gramaza" class="errors">{{ errors.gramaza }}</span>
+                  <label>Mililitraža:</label>
+                  <input v-model.number="noviParfem.par_mililitraza"  required @input="validateMililitraza" title="Molimo unesite broj veći od 0">
+                  <span v-if="errors.mililitraza" class="errors">{{ errors.mililitraza }}</span>
                 </div>
               </div>
               <div class="form-row">
                 <div class="form-group">
                   <label>Opis:</label>
-                  <textarea v-model="novaCokolada.opis" required></textarea>
+                  <textarea v-model="noviParfem.par_opis" required></textarea>
                 </div>
               </div>
               <div class="form-row">
                 <div class="form-group">
                   <label>Slika:</label>
-                  <input v-model="novaCokolada.slika" required>
+                  <input v-model="noviParfem.par_slika" required>
                 </div>
               </div>
-              <button type="submit">Dodaj čokoladu</button>
+              <button type="submit">Dodaj parfem</button>
             </form>
           </div>
 
@@ -277,7 +287,7 @@
 
 <script>
 import axios from 'axios';
-import { ref, computed,provide,onMounted } from 'vue';
+import { ref, computed,provide,onMounted,router } from 'vue';
 import { useRouter } from 'vue-router';
 import HomeView from './HomeView.vue';
 
@@ -290,17 +300,18 @@ export default {
     const router = useRouter();
     const prikaziFormu = ref({});
     const prikaziFormuRadnik = ref({});
-    const novaCokolada = ref({
-      naziv: '',
-      cena: 0,
-      vrstaCokolade: 'obicna',
-      tipCokolade: 'crna',
-      gramaza: 0,
-      kolicina: 0,
-      opis: '',
-      slika: '',
-      status: 'Nedostupno',
-      obrisano: false
+    const noviParfem = ref({
+      par_naziv: '',
+      par_opis: '',
+      par_slika: '',
+      par_kolicina: 0,
+      par_mililitraza: 0,
+      par_dostupan: false,
+      par_obrisan: false,
+      par_fab_id: null,
+      par_vp_id: 1,
+      par_tp_id: 1,
+      par_kp_id: 1
     });
     const searchQuery = ref('');
     const searchChocolate = ref('');
@@ -355,19 +366,20 @@ export default {
     const error = ref(null);
     const errors = ref({
       cena: null,
-      gramaza: null
+      mililitraza: null
     });
     
     const isFormValid = computed(() => {
-      return novaCokolada.value.naziv &&
-        novaCokolada.value.cena>0 &&
-        novaCokolada.value.vrstaCokolade &&
-        novaCokolada.value.tipCokolade &&
-        novaCokolada.value.gramaza > 0 &&
-        novaCokolada.value.opis &&
-        novaCokolada.value.slika &&
+      return noviParfem.value.par_naziv &&
+      //noviParfem.value.cena>0 &&
+      noviParfem.value.par_tp_id &&
+      noviParfem.value.par_vp_id &&
+      noviParfem.value.par_kp_id &&
+      noviParfem.value.par_mililitraza > 0 &&
+      noviParfem.value.par_opis &&
+      noviParfem.value.par_slika &&
         !errors.value.cena &&
-        !errors.value.gramaza;
+        !errors.value.mililitraza;
     });
     const validateCena = () => {
       if (novaCokolada.value.cena <= 0) {
@@ -376,11 +388,11 @@ export default {
         errors.value.cena = null;
       }
     };
-    const validateGramaza = () => {
-      if (novaCokolada.value.gramaza <= 0) {
-        errors.value.gramaza = 'Gramaza mora biti veća od 0';
+    const validateMililitraza = () => {
+      if (noviParfem.value.par_mililitraza <= 0) {
+        errors.value.mililitraza = 'Mililitraža mora biti veća od 0';
       } else {
-        errors.value.gramaza = null;
+        errors.value.mililitraza = null;
       }
     };
    
@@ -429,36 +441,38 @@ const onFileSelected = async (event) => {
 };
 
    
-    const dodajCokoladu = (fabrikaId) => {
-      validateCena();
-      validateGramaza();
+    const dodajParfem = (fabrikaId) => {
+      //validateCena();
+      validateMililitraza();
       if (isFormValid.value) {
-        const novaCokoladaData = {
-          ...novaCokolada.value,
-          objekatId: fabrikaId,
-          kolicina: 0,
-          status: 'Nedostupno',
-          obrisano: false
+        const noviParfemData = {
+          ...noviParfem.value,
+          par_fab_id: fabrikaId,
+          par_kolicina: 0,
+          par_dostupan: false,
+          par_obrisan: false
         };
-
-        axios.post('http://localhost:8080/WebShopAppREST/rest/cokolade/add', novaCokoladaData)
+        console.log(noviParfemData);
+        axios.post('https://localhost:44333/api/parfem', noviParfemData)
+        
           .then(response => {
-            alert('Čokolada uspešno dodata');
+            alert('Parfem uspešno dodat');
             toggleForm(fabrikaId);
-            novaCokolada.value = {
-              naziv: '',
-              cena: 0,
-              vrstaCokolade: 'obicna',
-              tipCokolade: 'crna',
-              gramaza: 0,
-              kolicina: 0,
-              opis: '',
-              slika: '',
-              status: 'Nedostupno',
-              obrisano: false
+            noviParfem.value = {
+              par_naziv: '',
+              par_opis: '',
+              par_slika: '',
+              par_kolicina: 0,
+              par_mililitraza: 0,
+              par_dostupan: false,
+              par_obrisan: false,
+              par_fab_id: null,
+              par_vp_id: 1,
+              par_tp_id: 1,
+              par_kp_id: 1
             };
             errors.value.cena = null;
-            errors.value.gramaza = null;
+            errors.value.mililitraza = null;
           })
           .catch(error => console.error(error));
       }
@@ -491,8 +505,8 @@ const onFileSelected = async (event) => {
       axios.post('https://localhost:44333/api/users/register', user.value)
         .then(response => {
           error.value = null;
-          alert('Korisnik i fabrika uspešno dodati');
           showNewFactoryDialog.value = false;
+          router.push('/');
         })
         .catch(error => {
           if (error.response && error.response.status === 409) {
@@ -556,8 +570,8 @@ const onFileSelected = async (event) => {
     });
    
     return {
-      prikaziFormu, novaCokolada, searchQuery, searchChocolate, searchLocation, 
-      sortKey, sortOrderAsc,prikaziDetalje, toggleForm, dodajCokoladu, filteredAndSortedFabrike,showNewFactoryDialog,novaFabrika,dodajFabriku,user,korisnikUloga,korisnikFabrikaId,
+      prikaziFormu, noviParfem, searchQuery, searchChocolate, searchLocation, 
+      sortKey, sortOrderAsc,prikaziDetalje, toggleForm, dodajParfem, filteredAndSortedFabrike,showNewFactoryDialog,novaFabrika,dodajFabriku,user,korisnikUloga,korisnikFabrikaId,
       dodajRadnika,noviRadnik,prikaziFormuRadnik,toggleFormRadnik,filterMyOnly,today,errors,onFileSelected    }
   }
 }
