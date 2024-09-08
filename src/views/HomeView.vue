@@ -3,17 +3,15 @@
     <div class="background"></div> 
     <div class="content">
       <img alt="Vue logo" class="logo" src="../assets/ch1.jpg">
-
-      <FabrikeView :fabrike="fabrike" />
+      <FabrikeView :fabrike="fabrike" @fabrikaAdded="handleFabrikaAdded" />
     </div>
   </div>
 </template>
 
 <script>
-import ProductsView from '../views/ProductsView.vue';
 import FabrikeView from '../views/FabrikeView.vue';
 import axios from 'axios';
-import { ref, onMounted,inject } from 'vue';
+import { ref, onMounted } from 'vue';
 
 export default {
   name: 'HomeView',
@@ -25,7 +23,7 @@ export default {
 
     onMounted(() => {
       loadFabrike();
-    })
+    });
 
     function loadFabrike() {
       axios.get('https://localhost:44333/api/fabrika')
@@ -34,12 +32,16 @@ export default {
         })
         .catch(error => console.error(error));
     }
-   
 
-    return { fabrike };
+    function handleFabrikaAdded(newFabrika) {
+      loadFabrike(); 
+    }
+
+    return { fabrike, handleFabrikaAdded };
   }
 }
 </script>
+
 
 <style>
 .home {

@@ -162,12 +162,12 @@
                   <label>Naziv:</label>
                   <input v-model="noviParfem.par_naziv" required>
                 </div>
-                <!--
+                
                 <div class="form-group">
                   <label>Cena:</label>
-                  <input v-model.number="novaCokolada.cena" required @input="validateCena" title="Molimo unesite broj veći od 0">
+                  <input v-model.number="stavkaCenovnika.sc_cena" required @input="validateCena" title="Molimo unesite broj veći od 0">
                   <span v-if="errors.cena" class="errors">{{ errors.cena }}</span>
-                </div>-->
+                </div>
               </div>
               <div class="form-row">
                 <div class="form-group">
@@ -213,7 +213,9 @@
               <div class="form-row">
                 <div class="form-group">
                   <label>Slika:</label>
-                  <input v-model="noviParfem.par_slika" required>
+                  
+                  
+            <input type="file" @change="onFileSelected1" accept="image/*" required>
                 </div>
               </div>
               <button type="submit">Dodaj parfem</button>
@@ -296,7 +298,7 @@ export default {
   props: {
     fabrike: Array
   },
-  setup(props) {
+  setup(props,{ emit }) {
     const router = useRouter();
     const prikaziFormu = ref({});
     const prikaziFormuRadnik = ref({});
@@ -313,6 +315,7 @@ export default {
       par_tp_id: 1,
       par_kp_id: 1
     });
+    
     const searchQuery = ref('');
     const searchChocolate = ref('');
     const searchLocation = ref('');
@@ -333,6 +336,11 @@ export default {
       fab_vreme_do:'',
       fab_tel:'',
       fab_logo:''
+    });
+    const stavkaCenovnika = ref({
+      sc_cena: 0,
+      sc_par_id: 0,
+      sc_cen_id:0
     });
     const noviRadnik = ref({
       kor_email: "",
@@ -371,7 +379,7 @@ export default {
     
     const isFormValid = computed(() => {
       return noviParfem.value.par_naziv &&
-      //noviParfem.value.cena>0 &&
+      stavkaCenovnika.value.sc_cena>0 &&
       noviParfem.value.par_tp_id &&
       noviParfem.value.par_vp_id &&
       noviParfem.value.par_kp_id &&
@@ -382,7 +390,7 @@ export default {
         !errors.value.mililitraza;
     });
     const validateCena = () => {
-      if (novaCokolada.value.cena <= 0) {
+      if (stavkaCenovnika.value.sc_cena <= 0) {
         errors.value.cena = 'Cena mora biti veća od 0';
       } else {
         errors.value.cena = null;
@@ -440,43 +448,93 @@ const onFileSelected = async (event) => {
   }
 };
 
+const onFileSelected1 = async (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      
+      const response = await axios.post('https://localhost:44333/api/images/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+     
+     
+      noviParfem.value.par_slika = response.data.filePath || response.data.path || response.data.url; 
+     
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
+  }
+};
+
    
-    const dodajParfem = (fabrikaId) => {
-      //validateCena();
-      validateMililitraza();
-      if (isFormValid.value) {
-        const noviParfemData = {
-          ...noviParfem.value,
-          par_fab_id: fabrikaId,
-          par_kolicina: 0,
-          par_dostupan: false,
-          par_obrisan: false
-        };
-        console.log(noviParfemData);
-        axios.post('https://localhost:44333/api/parfem', noviParfemData)
-        
-          .then(response => {
-            alert('Parfem uspešno dodat');
-            toggleForm(fabrikaId);
-            noviParfem.value = {
-              par_naziv: '',
-              par_opis: '',
-              par_slika: '',
-              par_kolicina: 0,
-              par_mililitraza: 0,
-              par_dostupan: false,
-              par_obrisan: false,
-              par_fab_id: null,
-              par_vp_id: 1,
-              par_tp_id: 1,
-              par_kp_id: 1
-            };
-            errors.value.cena = null;
-            errors.value.mililitraza = null;
-          })
-          .catch(error => console.error(error));
-      }
+const dodajParfem = async (fabrikaId) => {
+  validateCena();
+  validateMililitraza();
+  
+  if (isFormValid.value) {
+    
+    const noviParfemData = {
+      ...noviParfem.value,
+      par_fab_id: fabrikaId,
+      par_kolicina: 0,
+      par_dostupan: false,
+      par_obrisan: false
     };
+
+    try {
+      // Cenovnik 
+      const cenovnikResponse = await axios.get(`https://localhost:44333/api/cenovnik/fabrikaId/${fabrikaId}`);
+      const cenovnikId = cenovnikResponse.data.id;
+      stavkaCenovnika.value.sc_cen_id = cenovnikId;
+      console.log("Id cenovnika je", cenovnikId);
+
+      // parfem
+      const parfemResponse = await axios.post('https://localhost:44333/api/parfem', noviParfemData);
+      const parId = parfemResponse.data.id;
+      stavkaCenovnika.value.sc_par_id = parId;
+      console.log("Id parfema je", parId);
+
+      // StavkaCenovnika 
+      console.log("Stavka cenovnika je", stavkaCenovnika.value);
+      await axios.post('https://localhost:44333/api/stavka-cenovnika', stavkaCenovnika.value);
+
+      // Reset form after successful addition
+      toggleForm(fabrikaId);
+      noviParfem.value = {
+        par_naziv: '',
+        par_opis: '',
+        par_slika: '',
+        par_kolicina: 0,
+        par_mililitraza: 0,
+        par_dostupan: false,
+        par_obrisan: false,
+        par_fab_id: null,
+        par_vp_id: 1,
+        par_tp_id: 1,
+        par_kp_id: 1
+      };
+      stavkaCenovnika.value = {
+        sc_cena: 0,
+        sc_par_id: 0,
+        sc_cen_id: 0
+      };
+      errors.value.cena = null;
+      errors.value.mililitraza = null;
+
+      
+    } catch (error) {
+      console.error('Greška:', error);
+      alert('Došlo je do greške prilikom dodavanja parfema ili stavke cenovnika.');
+    }
+  }
+};
+
 
     function dodajRadnika(fabrikaId) {
       const noviRadnikData = {
@@ -497,7 +555,7 @@ const onFileSelected = async (event) => {
   axios.post('https://localhost:44333/api/fabrika', novaFabrika.value)
     .then(response => {
       const fabrikaId = response.data.id; 
-      
+      emit('fabrikaAdded', response.data);
       
       user.value.kor_fab_id = fabrikaId;
       
@@ -506,7 +564,7 @@ const onFileSelected = async (event) => {
         .then(response => {
           error.value = null;
           showNewFactoryDialog.value = false;
-          router.push('/');
+           
         })
         .catch(error => {
           if (error.response && error.response.status === 409) {
@@ -570,9 +628,9 @@ const onFileSelected = async (event) => {
     });
    
     return {
-      prikaziFormu, noviParfem, searchQuery, searchChocolate, searchLocation, 
+      prikaziFormu, noviParfem, searchQuery, stavkaCenovnika, searchChocolate, searchLocation, 
       sortKey, sortOrderAsc,prikaziDetalje, toggleForm, dodajParfem, filteredAndSortedFabrike,showNewFactoryDialog,novaFabrika,dodajFabriku,user,korisnikUloga,korisnikFabrikaId,
-      dodajRadnika,noviRadnik,prikaziFormuRadnik,toggleFormRadnik,filterMyOnly,today,errors,onFileSelected    }
+      dodajRadnika,noviRadnik,prikaziFormuRadnik,toggleFormRadnik,filterMyOnly,today,errors,onFileSelected ,onFileSelected1   }
   }
 }
 </script>
@@ -669,6 +727,7 @@ const onFileSelected = async (event) => {
   border: 1px solid #ccc;
   border-radius: 5px;
   width: calc(100% - 16px); 
+  background-color: #fff;
 }
 
 .fabrika-item button {
@@ -719,8 +778,8 @@ border-radius: 10px;
 .modal-content {
   max-width: 600px;
   width: 100%;
-  max-height: 80vh; /* Limit height to 80% of viewport height */
-  overflow-y: auto; /* Enable vertical scroll if content exceeds modal height */
+  max-height: 80vh; 
+  overflow-y: auto; 
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
@@ -756,6 +815,7 @@ border-radius: 10px;
   border-radius: 5px;
   width: calc(100% - 16px); 
 }
+
 
 .form-actions {
   display: flex;

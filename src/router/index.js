@@ -9,6 +9,9 @@ import OceneView from '../views/OceneView.vue';
 import KuponiView from '../views/KuponiView.vue';
 import NewsDetailView from '../views/NewsDetailView.vue';
 
+import ParfemiView from '../views/ParfemiView.vue';
+import FabrikaDetaljiView from '../views/FabrikaDetaljiView.vue';
+
 const routes = [
   {
     path: '/',
@@ -40,6 +43,14 @@ const routes = [
     })
   },
   {
+    path: '/parfemi',
+    name: 'parfemi',
+    component: ParfemiView,
+    props: route => ({
+      parfemi: route.meta.parfemi
+    })
+  },
+  {
     path: '/users',
     name: 'users',
     component: UsersView
@@ -58,6 +69,11 @@ const routes = [
     path: '/kuponi',
     name: 'kuponi',
     component: KuponiView
+  },
+  {
+    path: '/fabrike/:id',
+    name: 'DetaljiFabrike',
+    component: FabrikaDetaljiView
   }
   
   

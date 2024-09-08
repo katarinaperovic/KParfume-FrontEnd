@@ -270,6 +270,7 @@ body {
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s;
+  z-index: 9999;
 }
 
 .rate-app-btn:hover {
