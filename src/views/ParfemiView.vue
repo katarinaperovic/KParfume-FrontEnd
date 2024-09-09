@@ -45,11 +45,9 @@
             <label>Opis:</label>
             <input v-model="editedParfem.par_opis" required>
             <label>Slika:</label>
-           <!-- <input v-model="editedParfem.par_slika" required>-->
-           
+         
         <input type="file" @change="onFileSelected" accept="image/*">
         
-        <!-- Display the current or selected image file name -->
         <label v-if="selectedFileName || editedParfem.par_slika">
           
         </label>
@@ -265,7 +263,7 @@ function saveKolicina() {
   axios.put(`https://localhost:44333/api/parfem/kolicina/${editingKolicina.value.id}`, editedKolicina.value.par_kolicina,
   {
       headers: {
-        'Content-Type': 'application/json'  // Ensure the correct content type is set
+        'Content-Type': 'application/json'  
       }
     }
   )

@@ -16,6 +16,11 @@
         </form>
       </div>
   
+
+    <div v-if="vestiList.length === 0" class="no-news-message">
+      Trenutno nema vesti.
+    </div>
+
       <div class="vesti-list">
         <div v-for="vest in vestiList" :key="vest.id" class="vest-card">
           <img :src="'https://localhost:44333/resources' + vest.ves_slika" class="vest-image" alt="Slika vesti">
@@ -243,6 +248,18 @@
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
   }
   
+  
+.no-news-message {
+  color: #ccc;
+  text-align: center; 
+  font-size: 24px; 
+  position: absolute; 
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+  width: 100%; 
+}
+
   .vest-image {
     width: 100%;
     height: 180px;

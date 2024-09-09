@@ -20,7 +20,7 @@
       </div>
       <!-- Prosleđujemo fabrikaId komponenti Cokolade i komentarima -->
       <!--<komentari :fabrika="fabrika" :fabrikaId="fabrikaId"></komentari>-->
-      <parfemi :fabrika="fabrika" :fabrikaId="fabrikaId"></parfemi>
+     
     </div>
   </template>
   
@@ -28,7 +28,6 @@
   import axios from 'axios';
   import { ref, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
-  import Parfemi from '@/views/ParfemiView.vue';
   //import Komentari from '@/views/KomentariView.vue';
   
   const router = useRouter();

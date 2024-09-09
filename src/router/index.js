@@ -8,9 +8,10 @@ import VestiView from '../views/VestiView.vue';
 import OceneView from '../views/OceneView.vue';
 import KuponiView from '../views/KuponiView.vue';
 import NewsDetailView from '../views/NewsDetailView.vue';
-
+import ProfileView from '../views/ProfileView.vue';
 import ParfemiView from '../views/ParfemiView.vue';
 import FabrikaDetaljiView from '../views/FabrikaDetaljiView.vue';
+import FabrikaDetaljiParfemi from '../views/FabrikaDetaljiParfemi.vue';
 
 const routes = [
   {
@@ -18,6 +19,12 @@ const routes = [
     name: 'home',
     component: HomeView
   },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: ProfileView
+  }
+,
   {
     path: '/login',
     name: 'login',
@@ -74,6 +81,11 @@ const routes = [
     path: '/fabrike/:id',
     name: 'DetaljiFabrike',
     component: FabrikaDetaljiView
+  },
+  {
+    path: '/fabrike/parfemi/:id',
+    name: 'DetaljiFabrikeParfemi',
+    component: FabrikaDetaljiParfemi
   }
   
   

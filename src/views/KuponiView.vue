@@ -37,7 +37,7 @@
       async fetchNews() {
         try {
           const response = await axios.get('https://localhost:44333/api/kupon');
-          this.kuponiList = response.data.filter(k=>String(k.kpn_kor_id)===String(this.korisnikId));
+          this.kuponiList = response.data.filter(k=>String(k.kpn_kor_id)===String(this.korisnikId)&& k.kpn_aktivan === true);
           console.log(this.vestiList);
         } catch (error) {
           console.error("Error fetching kuponi:", error);

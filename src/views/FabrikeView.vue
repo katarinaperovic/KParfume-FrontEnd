@@ -153,6 +153,7 @@
           <span v-else>Nema još ocena</span>
           </p>-->
           <button @click="prikaziDetalje(fabrika.id)">Prikaži detalje</button>
+          <button @click="prikaziDetalje2(fabrika.id)">Parfemi</button>
           <button @click="toggleForm(fabrika.id)" v-if="korisnikUloga === 'menadzer' && String(korisnikFabrikaId)===String(fabrika.id)">Dodaj novi parfem</button>
           <div v-if="prikaziFormu[fabrika.id]" class="novi-parfem-form">
             <h3>Dodaj novi parfem</h3>
@@ -417,6 +418,10 @@ export default {
       router.push(`/fabrike/${id}`);
     }
 
+    function prikaziDetalje2(id) {
+      router.push(`/fabrike/parfemi/${id}`);
+    }
+
     function toggleForm(fabrikaId) {
       prikaziFormu.value = { ...prikaziFormu.value, [fabrikaId]: !prikaziFormu.value[fabrikaId] };
     }
@@ -630,7 +635,7 @@ const dodajParfem = async (fabrikaId) => {
     return {
       prikaziFormu, noviParfem, searchQuery, stavkaCenovnika, searchChocolate, searchLocation, 
       sortKey, sortOrderAsc,prikaziDetalje, toggleForm, dodajParfem, filteredAndSortedFabrike,showNewFactoryDialog,novaFabrika,dodajFabriku,user,korisnikUloga,korisnikFabrikaId,
-      dodajRadnika,noviRadnik,prikaziFormuRadnik,toggleFormRadnik,filterMyOnly,today,errors,onFileSelected ,onFileSelected1   }
+      dodajRadnika,noviRadnik,prikaziFormuRadnik,toggleFormRadnik,filterMyOnly,today,errors,onFileSelected ,onFileSelected1 ,prikaziDetalje2  }
   }
 }
 </script>
