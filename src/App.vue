@@ -20,6 +20,7 @@
     <nav v-if="authState.korisnikUloga === 'menadzer' && authState.isLoggedIn" class="navbar stunning-navbar">
       <router-link to="/">Home</router-link>
       <router-link to="/vesti">Vesti</router-link>
+      <router-link to="/komentariZahtevi">Zahtevi za komentar </router-link>
       <router-link v-if="authState.isLoggedIn" to="/profile">Profil</router-link> 
       <router-link to="/login">Logout</router-link>
     </nav>

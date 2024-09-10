@@ -12,6 +12,8 @@ import ProfileView from '../views/ProfileView.vue';
 import ParfemiView from '../views/ParfemiView.vue';
 import FabrikaDetaljiView from '../views/FabrikaDetaljiView.vue';
 import FabrikaDetaljiParfemi from '../views/FabrikaDetaljiParfemi.vue';
+import KomentariView from '@/views/KomentariView.vue';
+import KomentariZahteviView from '@/views/KomentariZahteviView.vue';
 
 const routes = [
   {
@@ -86,7 +88,21 @@ const routes = [
     path: '/fabrike/parfemi/:id',
     name: 'DetaljiFabrikeParfemi',
     component: FabrikaDetaljiParfemi
+  },
+  {
+    path: '/komentari',
+    name: 'komentari',
+    component: KomentariView,
+    props: route => ({
+      komentari: route.meta.komentari
+    })
+  },
+  {
+    path: '/komentariZahtevi',
+    name: 'komentariZahtevi',
+    component: KomentariZahteviView
   }
+
   
   
 ];

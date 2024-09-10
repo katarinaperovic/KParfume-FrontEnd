@@ -57,6 +57,7 @@
               <button @click="editParfem(parfem)" v-if="korisnikUloga === 'menadzer' && String(korisnikFabrikaId) === String(fabrikaId)">Izmeni</button>
               <button @click="editKolicina(parfem)" v-if="korisnikUloga === 'radnik' && String(korisnikFabrikaId) === String(fabrikaId)">Izmeni količinu</button>
               <button @click="confirmDelete(parfem)" v-if="korisnikUloga === 'menadzer' && String(korisnikFabrikaId) === String(fabrikaId)">Obriši</button>
+            
             </div>
           </div>
         </div>
