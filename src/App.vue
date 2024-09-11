@@ -5,126 +5,177 @@
       <router-link to="/registration">Registracija</router-link>
       <router-link to="/login">Login</router-link>
     </nav>
-    
-    <nav v-if="authState.korisnikUloga === 'administrator' && authState.isLoggedIn" class="navbar stunning-navbar">
+
+    <nav
+      v-if="authState.korisnikUloga === 'administrator' && authState.isLoggedIn"
+      class="navbar stunning-navbar"
+    >
       <router-link to="/">Home</router-link>
       <router-link to="/vesti">Vesti</router-link>
       <router-link to="/ocene">Ocene</router-link>
       <router-link to="/users">Korisnici</router-link>
-      <router-link v-if="authState.isLoggedIn" to="/profile">Profil</router-link> 
+      <router-link v-if="authState.isLoggedIn" to="/profile"
+        >Profil</router-link
+      >
       <router-link to="/login">Logout</router-link>
-      
-
     </nav>
 
-    <nav v-if="authState.korisnikUloga === 'menadzer' && authState.isLoggedIn" class="navbar stunning-navbar">
+    <nav
+      v-if="authState.korisnikUloga === 'menadzer' && authState.isLoggedIn"
+      class="navbar stunning-navbar"
+    >
       <router-link to="/">Home</router-link>
       <router-link to="/vesti">Vesti</router-link>
       <router-link to="/komentariZahtevi">Zahtevi za komentar </router-link>
-      <router-link v-if="authState.isLoggedIn" to="/profile">Profil</router-link> 
+      <router-link v-if="authState.isLoggedIn" to="/profile"
+        >Profil</router-link
+      >
       <router-link to="/login">Logout</router-link>
     </nav>
 
-    <nav v-if="authState.korisnikUloga === 'radnik' && authState.isLoggedIn" class="navbar stunning-navbar">
+    <nav
+      v-if="authState.korisnikUloga === 'radnik' && authState.isLoggedIn"
+      class="navbar stunning-navbar"
+    >
       <router-link to="/">Home</router-link>
       <router-link to="/vesti">Vesti</router-link>
-      <router-link v-if="authState.isLoggedIn" to="/profile">Profil</router-link> 
+      <router-link v-if="authState.isLoggedIn" to="/profile"
+        >Profil</router-link
+      >
       <router-link to="/login">Logout</router-link>
     </nav>
 
-    <nav v-if="authState.korisnikUloga === 'kupac' && authState.isLoggedIn" class="navbar stunning-navbar">
+    <nav
+      v-if="authState.korisnikUloga === 'kupac' && authState.isLoggedIn"
+      class="navbar stunning-navbar"
+    >
       <router-link to="/">Home</router-link>
       <router-link to="/vesti">Vesti</router-link>
       <router-link to="/kuponi">Kuponi</router-link>
-      <router-link to="/korpa">Korpa</router-link>
-      <router-link v-if="authState.isLoggedIn" to="/profile">Profil</router-link> 
+      <router-link v-if="authState.isLoggedIn" to="/profile"
+        >Profil</router-link
+      >
+      <router-link to="/korpa">
+        <i class="fa fa-shopping-cart" style="margin-right: 5px"></i> Korpa
+      </router-link>
       <router-link to="/login">Logout</router-link>
     </nav>
   </header>
 
+  <button
+    v-if="authState.korisnikUloga !== 'administrator' && authState.isLoggedIn"
+    class="rate-app-btn"
+    @click="showRatingForm = true"
+  >
+    Ocenite aplikaciju
+  </button>
 
-  <button v-if="authState.korisnikUloga !== 'administrator' && authState.isLoggedIn"class="rate-app-btn" @click="showRatingForm = true">
-      Ocenite aplikaciju
-    </button>
+  <!-- Rating Form Modal -->
+  <!-- Rating Form Modal -->
+  <div v-if="showRatingForm" class="rating-modal">
+    <div class="rating-form">
+      <!-- Close Button -->
+      <button class="close-modal" @click="showRatingForm = false">
+        &times;
+      </button>
 
-    <!-- Rating Form Modal -->
-   <!-- Rating Form Modal -->
-   <div v-if="showRatingForm" class="rating-modal">
-      <div class="rating-form">
-        <!-- Close Button -->
-        <button class="close-modal" @click="showRatingForm = false">&times;</button>
-        
-        <h3>Oceni aplikaciju</h3>
-        
-        <!-- Star Rating System -->
-        <div class="star-rating">
-          <input v-model="rating.ocn_vrednost" type="radio" id="star5" value="5" />
-          <label for="star5">&#9733;</label>
-          <input v-model="rating.ocn_vrednost" type="radio" id="star4" value="4" />
-          <label for="star4">&#9733;</label>
-          <input v-model="rating.ocn_vrednost" type="radio" id="star3" value="3" />
-          <label for="star3">&#9733;</label>
-          <input v-model="rating.ocn_vrednost" type="radio" id="star2" value="2" />
-          <label for="star2">&#9733;</label>
-          <input v-model="rating.ocn_vrednost" type="radio" id="star1" value="1" />
-          <label for="star1">&#9733;</label>
-        </div>
+      <h3>Oceni aplikaciju</h3>
 
-        <!-- Comment Box -->
-        <textarea v-model="rating.ocn_kom" placeholder="Vaš komentar" required></textarea>
-
-        <!-- Submit Button -->
-        <button @click="submitRating">Pošalji</button>
+      <!-- Star Rating System -->
+      <div class="star-rating">
+        <input
+          v-model="rating.ocn_vrednost"
+          type="radio"
+          id="star5"
+          value="5"
+        />
+        <label for="star5">&#9733;</label>
+        <input
+          v-model="rating.ocn_vrednost"
+          type="radio"
+          id="star4"
+          value="4"
+        />
+        <label for="star4">&#9733;</label>
+        <input
+          v-model="rating.ocn_vrednost"
+          type="radio"
+          id="star3"
+          value="3"
+        />
+        <label for="star3">&#9733;</label>
+        <input
+          v-model="rating.ocn_vrednost"
+          type="radio"
+          id="star2"
+          value="2"
+        />
+        <label for="star2">&#9733;</label>
+        <input
+          v-model="rating.ocn_vrednost"
+          type="radio"
+          id="star1"
+          value="1"
+        />
+        <label for="star1">&#9733;</label>
       </div>
+
+      <!-- Comment Box -->
+      <textarea
+        v-model="rating.ocn_kom"
+        placeholder="Vaš komentar"
+        required
+      ></textarea>
+
+      <!-- Submit Button -->
+      <button @click="submitRating">Pošalji</button>
     </div>
+  </div>
 
   <router-view />
 </template>
 
-
-
 <script setup>
-import { useAuth } from './auth';  
-import { ref, onMounted,inject } from 'vue';
+import { useAuth } from "./auth";
+import { ref, onMounted, inject } from "vue";
 
 const { state: authState, checkLoginStatus } = useAuth();
 const showRatingForm = ref(false);
 const rating = ref({
-  ocn_kor_id: null,  // Set user ID from auth state if available
+  ocn_kor_id: null, // Set user ID from auth state if available
   ocn_vrednost: null,
-  ocn_kom: '',
-  ocn_dat: new Date().toISOString().split('T')[0], 
+  ocn_kom: "",
+  ocn_dat: new Date().toISOString().split("T")[0],
 });
-const korisnikId = ref('');
-checkLoginStatus();  
+const korisnikId = ref("");
+checkLoginStatus();
 onMounted(() => {
-  const korisnik = JSON.parse(localStorage.getItem('korisnik'));
-  korisnikId.value = korisnik ? korisnik.id : '';
+  const korisnik = JSON.parse(localStorage.getItem("korisnik"));
+  korisnikId.value = korisnik ? korisnik.id : "";
   console.log(korisnikId.value);
-  rating.value.ocn_kor_id = korisnikId.value; 
+  rating.value.ocn_kor_id = korisnikId.value;
 });
 
 const submitRating = async () => {
   try {
     if (!rating.value.ocn_kom.trim()) {
-      alert('Komentar je obavezan! Molimo popunite komentar.');
+      alert("Komentar je obavezan! Molimo popunite komentar.");
       return;
     }
-   
-    const response = await fetch('https://localhost:44333/api/ocena', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+
+    const response = await fetch("https://localhost:44333/api/ocena", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(rating.value),
     });
-    
-      showRatingForm.value = false; 
-      rating.value.ocn_kor_id='';
-      rating.value.ocn_kom='';
-      rating.value.ocn_vrednost='';
-      rating.value.ocn_dat='';
-    
+
+    showRatingForm.value = false;
+    rating.value.ocn_kor_id = "";
+    rating.value.ocn_kom = "";
+    rating.value.ocn_vrednost = "";
+    rating.value.ocn_dat = "";
   } catch (error) {
-    console.error('Error submitting rating:', error);
+    console.error("Error submitting rating:", error);
   }
 };
 </script>
@@ -137,18 +188,21 @@ const submitRating = async () => {
   text-align: center;
   color: #2c3e50;
 }
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap");
 
 header {
   width: 100%;
-  background: linear-gradient(135deg, #543a51, #5b2121); /* Gradient background */
+  background: linear-gradient(
+    135deg,
+    #543a51,
+    #5b2121
+  ); /* Gradient background */
   padding: 5px 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  position: -webkit-sticky; 
-  position: sticky; 
-  top: 0; 
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
   z-index: 1000; /* Ensure it's above other elements */
- 
 }
 
 .stunning-navbar {
@@ -160,7 +214,7 @@ header {
 }
 
 .stunning-navbar a {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: bold;
   color: #fff;
   text-decoration: none;
@@ -175,7 +229,7 @@ header {
 }
 
 .stunning-navbar a::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 50%;
@@ -203,7 +257,7 @@ header {
 }
 
 .stunning-navbar a::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -3px;
   left: 0;
@@ -222,7 +276,7 @@ header {
 
 /* Optional: Glow Effect */
 header:before {
-  content: '';
+  content: "";
   position: absolute;
   top: -100px;
   left: -100px;
@@ -235,7 +289,7 @@ header:before {
 }
 
 header:after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -100px;
   right: -100px;
@@ -258,7 +312,7 @@ header:after {
 
 body {
   margin: 0;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   background-color: #2c3e50;
 }
 
@@ -310,15 +364,14 @@ body {
   z-index: 1001;
 }
 
-
-.rating-form input, .rating-form textarea {
+.rating-form input,
+.rating-form textarea {
   width: 100%;
   margin: 10px 0;
   padding: 12px;
   border-radius: 8px;
   border: 1px solid #ddd;
 }
-
 
 .rating-form button {
   background-color: #ff5722;
@@ -341,7 +394,7 @@ body {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
-  flex-direction: row-reverse; 
+  flex-direction: row-reverse;
 }
 
 .star-rating input {
@@ -356,29 +409,26 @@ body {
   transition: color 0.3s ease;
 }
 
-.star-rating input:checked ~ label, 
-.star-rating input:checked ~ label ~ label, 
-.star-rating label:hover, 
-.star-rating label:hover ~ label { 
+.star-rating input:checked ~ label,
+.star-rating input:checked ~ label ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
   color: #ffca08;
 }
 
-
 .rating-form .close-modal {
   position: absolute;
-  top: 10px;  
-  right: 15px; 
+  top: 10px;
+  right: 15px;
   background: transparent;
   border: none;
-  font-size: 30px;  
-  color: #333;  
+  font-size: 30px;
+  color: #333;
   cursor: pointer;
-  z-index: 1002;  
+  z-index: 1002;
 }
 
 .rating-form .close-modal:hover {
-  color: #594641; 
+  color: #594641;
 }
-
-
 </style>
