@@ -147,11 +147,11 @@
           <h2><strong>{{ fabrika.fab_naziv }}</strong></h2>
           <p> {{ fabrika.fab_adresa }}  </p>
           <p>{{ fabrika.fab_grad }} {{ fabrika.fab_pos_br }}</p>
-  <!--
+
           <p>Ocena: 
-          <span v-if="fabrika.ocena !== 0">{{ fabrika.ocena }}</span>
+          <span v-if="fabrika.fab_ocena !== 0">{{ fabrika.fab_ocena }}</span>
           <span v-else>Nema još ocena</span>
-          </p>-->
+          </p>
           <button @click="prikaziDetalje(fabrika.id)">Prikaži detalje</button>
           <button @click="prikaziDetalje2(fabrika.id)">Parfemi</button>
           <button @click="toggleForm(fabrika.id)" v-if="korisnikUloga === 'menadzer' && String(korisnikFabrikaId)===String(fabrika.id)">Dodaj novi parfem</button>
@@ -336,7 +336,8 @@ export default {
       fab_vreme_od:'',
       fab_vreme_do:'',
       fab_tel:'',
-      fab_logo:''
+      fab_logo:'',
+      fab_ocena: 0
     });
     const stavkaCenovnika = ref({
       sc_cena: 0,
