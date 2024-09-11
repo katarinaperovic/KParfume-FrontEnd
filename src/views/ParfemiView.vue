@@ -57,7 +57,12 @@
               <button @click="editParfem(parfem)" v-if="korisnikUloga === 'menadzer' && String(korisnikFabrikaId) === String(fabrikaId)">Izmeni</button>
               <button @click="editKolicina(parfem)" v-if="korisnikUloga === 'radnik' && String(korisnikFabrikaId) === String(fabrikaId)">Izmeni količinu</button>
               <button @click="confirmDelete(parfem)" v-if="korisnikUloga === 'menadzer' && String(korisnikFabrikaId) === String(fabrikaId)">Obriši</button>
-            
+              <button @click="addToCart(parfem)" 
+        v-if="korisnikUloga === 'kupac' && parfem.par_dostupan"
+        :class="{'invisible': !parfem.par_dostupan}">
+  Dodaj u korpu
+</button>
+
             </div>
           </div>
         </div>
@@ -148,6 +153,7 @@ const editingKolicina = ref(null);
 const editedKolicina = ref({});
 
 const korisnikFabrikaId = ref(''); 
+const korisnikovId = ref(''); 
 const korisnikUloga = ref('');
 const selectedFileName = ref('');
 const errors = ref({
@@ -214,6 +220,7 @@ onMounted(() => {
   const korisnik = JSON.parse(localStorage.getItem('korisnik'));
     korisnikUloga.value = korisnik ? korisnik.kor_uloga : '';
     korisnikFabrikaId.value = korisnik ? korisnik.kor_fab_id : '';
+    korisnikovId.value = korisnik ? korisnik.id : '';
 });
 
 async function loadParfemi() {
@@ -363,6 +370,39 @@ function deleteParfem(parfem) {
       })
       .catch(error => console.error(error));
   }
+
+
+  const addToCart = async (parfem) => {
+  try {
+    
+    const korisnikId = korisnikovId.value;
+    const korpaResponse = await axios.get(`https://localhost:44333/api/korpa/user/${korisnikId}`);
+   
+    
+    if (korpaResponse.status === 200 && korpaResponse.data) {
+      const korpaId = korpaResponse.data.id; 
+      console.log("Korpa id je:",korpaResponse);
+      
+      const stavkaKorpe = {
+        skrp_par_id: parfem.id,
+        skrp_cena_pj: 0, 
+        skrp_krp_id: korpaId,
+        skrp_kolicina: 1 
+      };
+
+     
+      await axios.post('https://localhost:44333/api/stavka-korpe', stavkaKorpe);
+      
+      alert('Parfem je uspešno dodat u korpu!');
+    } else {
+      alert('Korpa nije pronađena');
+    }
+  } catch (error) {
+    console.error('Greška prilikom dodavanja u korpu:', error);
+    alert('Došlo je do greške prilikom dodavanja u korpu.');
+  }
+};
+
 
 
 
@@ -539,6 +579,7 @@ h2 {
   display: flex;
   justify-content: space-between;
   padding: 0 15px 15px 15px;
+  min-height: 50px;
 }
 
 .card button {
@@ -783,5 +824,8 @@ h2 {
 
 /* Dodaj granicu oko celog elementa */
 
+.button-container button.invisible {
+  visibility: hidden !important;
+}
 
 </style>

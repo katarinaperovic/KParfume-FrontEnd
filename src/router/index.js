@@ -14,6 +14,7 @@ import FabrikaDetaljiView from '../views/FabrikaDetaljiView.vue';
 import FabrikaDetaljiParfemi from '../views/FabrikaDetaljiParfemi.vue';
 import KomentariView from '@/views/KomentariView.vue';
 import KomentariZahteviView from '@/views/KomentariZahteviView.vue';
+import KorpaView from '@/views/KorpaView.vue';
 
 const routes = [
   {
@@ -101,6 +102,12 @@ const routes = [
     path: '/komentariZahtevi',
     name: 'komentariZahtevi',
     component: KomentariZahteviView
+  },
+  
+  {
+    path: '/korpa',
+    name: 'korpa',
+    component: KorpaView
   }
 
   
