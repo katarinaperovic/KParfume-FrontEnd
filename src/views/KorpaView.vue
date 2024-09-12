@@ -202,6 +202,17 @@ export default {
 </script>
 
 <style scoped>
+@keyframes flyIn {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .cart-container {
   max-width: 960px;
   margin: 0 auto;
@@ -224,6 +235,7 @@ export default {
   padding: 10px;
   margin-bottom: 10px;
   transition: all 0.3s;
+  animation: flyIn 0.8s ease forwards;
 }
 
 .cart-item:last-child {
@@ -344,9 +356,11 @@ export default {
   color: #fff;
   margin: 10px 0;
   font-weight: bold;
+  animation: flyIn 0.8s ease forwards;
 }
 
 .fabric-title {
   color: #fff;
+  animation: flyIn 0.8s ease forwards;
 }
 </style>
