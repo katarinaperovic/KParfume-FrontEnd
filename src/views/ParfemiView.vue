@@ -491,7 +491,7 @@ const addToCart = async (parfem) => {
     }
   } catch (error) {
     console.error("Greška prilikom dodavanja u korpu:", error);
-    toastr.error("Došlo je do greške prilikom dodavanja u korpu.");
+    toastr.error("Parfem je vec dodat u korpu!");
   }
 };
 
