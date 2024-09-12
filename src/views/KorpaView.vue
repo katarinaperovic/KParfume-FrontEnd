@@ -53,9 +53,10 @@
             </button>
           </div>
         </div>
-        <div class="total-price">Total Price: {{ totalPrice }} RSD</div>
+        <div class="total-price">Ukupan iznos: {{ totalPrice }} RSD</div>
         <button class="checkout-btn" @click="goToPayment">
-          <i class="fa fa-credit-card" style="margin-right: 5px"></i> Checkout
+          <i class="fa fa-credit-card" style="margin-right: 5px"></i> Nastavi na
+          placanje
         </button>
       </div>
       <p v-else class="empty-cart-message">Your cart is empty</p>
@@ -117,6 +118,7 @@ export default {
             `https://localhost:44333/api/stavka-korpe/korpa/${korpaId}`
           );
           this.stavkeList = stavkeResponse.data;
+          console.log(this.stavkeList);
 
           await Promise.all(
             this.stavkeList.map(async (stavka) => {
@@ -156,7 +158,6 @@ export default {
           );
           if (updatedStavka) {
             updatedStavka.skrp_kolicina++;
-            toastr.success("Quantity increased");
           }
         }
       } catch (error) {
@@ -174,7 +175,6 @@ export default {
           );
           if (updatedStavka && updatedStavka.skrp_kolicina > 1) {
             updatedStavka.skrp_kolicina--;
-            toastr.success("Quantity decreased");
           }
         }
       } catch (error) {
@@ -194,8 +194,14 @@ export default {
         toastr.error("Error removing item");
       }
     },
-    async goToPayment() {
-      this.$router.push("/placanje");
+    goToPayment() {
+      this.$router.push({
+        path: "/placanje",
+        state: {
+          totalPrice: this.totalPrice,
+          stavkeList: JSON.stringify(this.stavkeList),
+        },
+      });
     },
   },
   mounted() {
