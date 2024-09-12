@@ -18,6 +18,7 @@ export default {
       stavkeList: [], // Holds the list of cart items
       totalPrice: 0, // Holds the total price
       korisnikId: null, // Holds the user ID
+      parfemi: {}, // Holds the perfume data
     };
   },
   methods: {
@@ -25,6 +26,46 @@ export default {
     cancel() {
       this.$router.push("/korpa");
     },
+
+    // Group items by fabrikaId
+    groupItemsByFabrika() {
+      const grouped = {};
+
+      this.stavkeList.forEach((stavka) => {
+        const parfemId = stavka.skrp_par_id;
+
+        // Safely check if parfemi[parfemId] exists
+        if (!this.parfemi[parfemId]) {
+          console.error(`Parfem data is missing for parfemId: ${parfemId}`);
+          return; // Skip this item if parfem data is missing
+        }
+
+        const parfemData = this.parfemi[parfemId];
+
+        if (parfemData && parfemData.par_fab_id) {
+          const fabrikaId = parfemData.par_fab_id;
+
+          // Group items by fabrikaId
+          if (!grouped[fabrikaId]) {
+            grouped[fabrikaId] = [];
+          }
+          grouped[fabrikaId].push(stavka);
+        } else {
+          console.error(`par_fab_id is missing for parfemId: ${parfemId}`);
+        }
+      });
+
+      return grouped;
+    },
+
+    // Calculate total price for a given fabrika group
+    calculateTotalPriceForFabrika(stavke) {
+      return stavke.reduce(
+        (acc, item) => acc + item.skrp_kolicina * item.skrp_cena_pj,
+        0
+      );
+    },
+
     // PayPal buttons configuration with success and error alerts
     initializePayPalButton() {
       window.paypal
@@ -33,7 +74,6 @@ export default {
             layout: "vertical",
             color: "blue",
           },
-          // Create an order
           createOrder: (data, actions) => {
             return actions.order.create({
               purchase_units: [
@@ -46,62 +86,13 @@ export default {
               ],
             });
           },
-          // On successful transaction approval
           onApprove: (data, actions) => {
             return actions.order.capture().then((details) => {
               if (details.status === "COMPLETED") {
-                const kupovinaData = {
-                  kup_kor_id: this.korisnikId,
-                  kup_fab_id: 6, // Hardcoded fabric ID
-                  kup_datum: new Date().toISOString(),
-                  kup_kpn_id: null,
-                  uk_cena: this.totalPrice,
-                  kup_valuta: "RSD",
-                  kup_status: details.status,
-                  kup_pp_id: details.id,
-                };
-
-                axios
-                  .post("https://localhost:44333/api/kupovina", kupovinaData)
-                  .then((response) => {
-                    this.stavkeList.forEach((stavka) => {
-                      const stavkaData = {
-                        sk_cena_pj: stavka.skrp_cena_pj,
-                        sk_par_id: stavka.skrp_par_id,
-                        sk_kup_id: response.data.id,
-                        sk_kolicina: stavka.skrp_kolicina,
-                      };
-
-                      axios
-                        .post(
-                          "https://localhost:44333/api/stavka-kupovine",
-                          stavkaData
-                        )
-                        .then(() => {
-                          axios
-                            .delete(
-                              `https://localhost:44333/api/stavka-korpe/user/${this.korisnikId}`
-                            )
-                            .then(() => {
-                              toastr.success("Purchase successful!");
-                              this.$router.push("/");
-                            });
-                        })
-                        .catch((error) => {
-                          console.error(
-                            "Error sending purchase item data:",
-                            error
-                          );
-                        });
-                    });
-                  })
-                  .catch((error) => {
-                    console.error("Error sending purchase data:", error);
-                  });
+                this.processSuccessfulTransaction(details);
               }
             });
           },
-          // On transaction error
           onError: (err) => {
             console.error("PayPal Error:", err);
             alert("Transaction failed. Please try again.");
@@ -109,19 +100,133 @@ export default {
         })
         .render("#paypal-button-container");
     },
+
+    // Process successful PayPal transaction and post for each fabrika
+    async processSuccessfulTransaction(details) {
+      const groupedItems = this.groupItemsByFabrika(); // Group items by fabrikaId
+      const paypalIntentId = details.id; // Same PayPal intent ID
+
+      // Process each distinct fabrika group
+      for (const fabrikaId of Object.keys(groupedItems)) {
+        const fabrikaStavke = groupedItems[fabrikaId];
+        const fabrikaTotalPrice =
+          this.calculateTotalPriceForFabrika(fabrikaStavke);
+
+        // Prepare kupovina data for this fabrika
+        const kupovinaData = {
+          kup_kor_id: this.korisnikId,
+          kup_fab_id: fabrikaId, // Unique fabrikaId for each group
+          kup_datum: new Date().toISOString(),
+          kup_kpn_id: null,
+          uk_cena: fabrikaTotalPrice,
+          kup_valuta: "RSD",
+          kup_status: details.status,
+          kup_pp_id: paypalIntentId, // Same PayPal intent ID for all purchases
+        };
+
+        // Post kupovina for this fabrika
+        try {
+          const kupovinaResponse = await axios.post(
+            "https://localhost:44333/api/kupovina",
+            kupovinaData
+          );
+
+          const purchaseId = kupovinaResponse.data.id;
+
+          // Post each item in the fabrika group as stavka_kupovine
+          for (const stavka of fabrikaStavke) {
+            const stavkaData = {
+              sk_cena_pj: stavka.skrp_cena_pj,
+              sk_par_id: stavka.skrp_par_id,
+              sk_kup_id: purchaseId,
+              sk_kolicina: stavka.skrp_kolicina,
+            };
+
+            await axios.post(
+              "https://localhost:44333/api/stavka-kupovine",
+              stavkaData
+            );
+          }
+        } catch (error) {
+          console.error(
+            "Error processing purchase for fabrikaId:",
+            fabrikaId,
+            error
+          );
+        }
+      }
+
+      // Finally, clear the cart once all purchases are processed
+      this.clearCart();
+    },
+
+    clearCart() {
+      axios
+        .delete(
+          `https://localhost:44333/api/stavka-korpe/user/${this.korisnikId}`
+        )
+        .then(() => {
+          toastr.success("All purchases completed and cart cleared!");
+          this.$router.push("/"); // Redirect to home page or any other desired page
+        })
+        .catch((error) => {
+          console.error("Error clearing the cart:", error);
+        });
+    },
   },
+
   mounted() {
     const korisnik = localStorage.getItem("korisnik");
-    this.korisnikId = JSON.parse(korisnik).id;
+    if (korisnik) {
+      this.korisnikId = JSON.parse(korisnik).id;
+    }
 
     const state = window.history.state;
 
     if (state) {
       this.totalPrice = state.totalPrice || 0;
       this.stavkeList = JSON.parse(state.stavkeList) || [];
-    }
 
-    this.initializePayPalButton();
+      const parfemPromises = this.stavkeList.map(async (stavka) => {
+        const parfemId = stavka.skrp_par_id;
+
+        console.log(`Fetching parfem data for parfemId: ${parfemId}`);
+
+        try {
+          if (!this.parfemi[parfemId]) {
+            const response = await axios.get(
+              `https://localhost:44333/api/parfem/${parfemId}`
+            );
+            if (response && response.data) {
+              this.parfemi[parfemId] = response.data;
+              console.log(
+                `Fetched parfem data for parfemId: ${parfemId}`,
+                response.data
+              );
+            } else {
+              console.error(
+                `No data received for parfemId: ${parfemId}`,
+                response
+              );
+            }
+          }
+        } catch (error) {
+          console.error(
+            `Error fetching parfemi for parfemId: ${parfemId}`,
+            error
+          );
+        }
+      });
+
+      Promise.all(parfemPromises)
+        .then(() => {
+          console.log("All parfemi fetched successfully, initializing PayPal");
+          this.initializePayPalButton();
+        })
+        .catch((error) => {
+          console.error("Error loading parfemi data:", error);
+        });
+    }
   },
 };
 </script>
