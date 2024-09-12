@@ -118,7 +118,7 @@ export default {
           kup_fab_id: fabrikaId, // Unique fabrikaId for each group
           kup_datum: new Date().toISOString(),
           kup_kpn_id: null,
-          uk_cena: fabrikaTotalPrice,
+          kup_uk_cena: fabrikaTotalPrice,
           kup_valuta: "RSD",
           kup_status: details.status,
           kup_pp_id: paypalIntentId, // Same PayPal intent ID for all purchases
