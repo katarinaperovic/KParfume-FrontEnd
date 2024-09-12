@@ -54,7 +54,7 @@
           </div>
         </div>
         <div class="total-price">Total Price: {{ totalPrice }} RSD</div>
-        <button class="checkout-btn">
+        <button class="checkout-btn" @click="goToPayment">
           <i class="fa fa-credit-card" style="margin-right: 5px"></i> Checkout
         </button>
       </div>
@@ -193,6 +193,9 @@ export default {
       } catch (error) {
         toastr.error("Error removing item");
       }
+    },
+    async goToPayment() {
+      this.$router.push("/placanje");
     },
   },
   mounted() {
