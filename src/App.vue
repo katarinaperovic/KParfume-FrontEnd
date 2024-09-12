@@ -55,6 +55,7 @@
       <router-link v-if="authState.isLoggedIn" to="/profile"
         >Profil</router-link
       >
+      <router-link to="/kupovine">Kupovine</router-link>
       <router-link to="/korpa">
         <i class="fa fa-shopping-cart" style="margin-right: 5px"></i> Korpa
       </router-link>

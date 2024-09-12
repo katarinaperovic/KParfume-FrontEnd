@@ -110,8 +110,8 @@ async function loadKomentari() {
 /* Star icon with rating inside */
 .rating-star {
   position: absolute;
-  top: 1px;
-  left: 1px;
+  top: -2px;
+  left: -4px;
   width: 60px; /* Manja zvezdica */
   height: 60px;
   background-color: #fff836;
@@ -141,10 +141,10 @@ async function loadKomentari() {
 
 /* Style for the user info section */
 .user-info {
-  background-color: #f4f3fb;
+  background-color: #dedbf491;
   padding: 10px;
   border-radius: 0 0 10px 10px;
-  color: #944444;
+  color: #161616;
   margin-top: -5px;
   text-align: left;
   padding-left: 40px;
