@@ -36,6 +36,7 @@
               <button
                 class="quantity-btn"
                 @click="dekrementKolicina(stavka.id)"
+                :disabled="stavka.skrp_kolicina <= 1"
               >
                 -
               </button>
@@ -70,10 +71,9 @@ import "toastr/build/toastr.min.css";
 export default {
   data() {
     return {
-      stavkeList: [], // Lista stavki korpe
-      parfemi: {}, // Objekat sa podacima o parfemima
-      korisnikId: "", // ID korisnika
-      fabrike: {}, // Objekat sa podacima o fabrikama
+      stavkeList: [], // List of cart items
+      parfemi: {}, // Perfume data
+      fabrike: {}, // Fabric data
     };
   },
   computed: {
@@ -99,41 +99,14 @@ export default {
     },
   },
   methods: {
-    // async fetchStavkeKorpe() {
-    //   try {
-    //     const korisnikId = JSON.parse(localStorage.getItem("korisnik")).id;
-
-    //     const korpaResponse = await axios.get(
-    //       `https://localhost:44333/api/korpa/user/${korisnikId}`
-    //     );
-    //     if (korpaResponse.status === 200 && korpaResponse.data) {
-    //       const korpaId = korpaResponse.data.id;
-
-    //       const stavkeResponse = await axios.get(
-    //         `https://localhost:44333/api/stavka-korpe/korpa/${korpaId}`
-    //       );
-    //       this.stavkeList = stavkeResponse.data;
-
-    //       await Promise.all(
-    //         this.stavkeList.map(async (stavka) => {
-    //           if (!this.parfemi[stavka.skrp_par_id]) {
-    //             const parfemResponse = await axios.get(
-    //               `https://localhost:44333/api/parfem/${stavka.skrp_par_id}`
-    //             );
-    //             this.parfemi[stavka.skrp_par_id] = parfemResponse.data;
-    //             console.log("Parfem", parfemResponse.data);
-    //           }
-    //         })
-    //       );
-    //     }
-    //   } catch (error) {
-    //     console.error("Greška prilikom učitavanja stavki korpe:", error);
-    //   }
-    // },
-
     async fetchStavkeKorpe() {
       try {
-        const korisnikId = JSON.parse(localStorage.getItem("korisnik")).id;
+        const korisnik = localStorage.getItem("korisnik");
+        if (!korisnik) {
+          toastr.error("User is not logged in");
+          return;
+        }
+        const korisnikId = JSON.parse(korisnik).id;
         const korpaResponse = await axios.get(
           `https://localhost:44333/api/korpa/user/${korisnikId}`
         );
@@ -168,6 +141,7 @@ export default {
           );
         }
       } catch (error) {
+        toastr.error("Error loading cart items");
         console.error("Error loading cart items:", error);
       }
     },
@@ -177,58 +151,47 @@ export default {
           `https://localhost:44333/api/stavka-korpe/inkrement/${id}`
         );
         if (response.status === 200) {
-          // Update the local state for the specific item
           const updatedStavka = this.stavkeList.find(
             (stavka) => stavka.id === id
           );
           if (updatedStavka) {
             updatedStavka.skrp_kolicina++;
+            toastr.success("Quantity increased");
           }
-          //toastr.success("Količina je uspešno povećana!");
-        } else {
-          //toastr.error("Došlo je do greške prilikom povećanja količine.");
         }
       } catch (error) {
-        //toastr.error("Došlo je do greške prilikom povećanja količine.");
+        toastr.error("Error increasing quantity");
       }
     },
-
     async dekrementKolicina(id) {
       try {
         const response = await axios.put(
           `https://localhost:44333/api/stavka-korpe/dekrement/${id}`
         );
         if (response.status === 200) {
-          // Update the local state for the specific item
           const updatedStavka = this.stavkeList.find(
             (stavka) => stavka.id === id
           );
-          if (updatedStavka) {
+          if (updatedStavka && updatedStavka.skrp_kolicina > 1) {
             updatedStavka.skrp_kolicina--;
+            toastr.success("Quantity decreased");
           }
-          //toastr.success("Količina je uspešno smanjena!");
-        } else {
-          //toastr.error("Došlo je do greške prilikom smanjenja količine.");
         }
       } catch (error) {
-        //toastr.error("Došlo je do greške prilikom smanjenja količine.");
+        toastr.error("Error decreasing quantity");
       }
     },
-
     async deleteStavka(id) {
       try {
         const response = await axios.delete(
           `https://localhost:44333/api/stavka-korpe/${id}`
         );
         if (response.status === 200) {
-          // Handle success, e.g., update the stavkeList
-          console.log("Delete successful", response.data);
           this.fetchStavkeKorpe();
-        } else {
-          console.error("Delete failed", response.data);
+          toastr.success("Item removed");
         }
       } catch (error) {
-        console.error("Error deleting stavka", error);
+        toastr.error("Error removing item");
       }
     },
   },
@@ -243,15 +206,8 @@ export default {
   max-width: 960px;
   margin: 0 auto;
   padding: 20px;
-  font-family: "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
-    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family: "Segoe UI", "Roboto", sans-serif;
   color: #333;
-}
-
-.cart-title {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 24px;
 }
 
 .cart-list {
@@ -275,8 +231,7 @@ export default {
 }
 
 .cart-item:hover {
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  scale: 1.01;
+  scale: 1.005;
 }
 
 .item-image {
