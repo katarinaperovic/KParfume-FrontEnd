@@ -8,6 +8,8 @@
 
 <script>
 import axios from "axios";
+import toastr from "toastr";
+import "toastr/build/toastr.min.css";
 
 export default {
   name: "PlacanjeView",
@@ -48,9 +50,6 @@ export default {
           onApprove: (data, actions) => {
             return actions.order.capture().then((details) => {
               if (details.status === "COMPLETED") {
-                alert("Transaction successful! Thank you for your purchase.");
-                console.log("Transaction details:", details);
-
                 const kupovinaData = {
                   kup_kor_id: this.korisnikId,
                   kup_fab_id: 6, // Hardcoded fabric ID
@@ -61,8 +60,6 @@ export default {
                   kup_status: details.status,
                   kup_pp_id: details.id,
                 };
-
-                console.log("Purchase data:", kupovinaData);
 
                 axios
                   .post("https://localhost:44333/api/kupovina", kupovinaData)
@@ -86,6 +83,7 @@ export default {
                               `https://localhost:44333/api/stavka-korpe/user/${this.korisnikId}`
                             )
                             .then(() => {
+                              toastr.success("Purchase successful!");
                               this.$router.push("/");
                             });
                         })
@@ -122,9 +120,6 @@ export default {
       this.totalPrice = state.totalPrice || 0;
       this.stavkeList = JSON.parse(state.stavkeList) || [];
     }
-
-    console.log(this.stavkeList);
-    console.log(this.totalPrice);
 
     this.initializePayPalButton();
   },
