@@ -1,54 +1,63 @@
 <template>
-  <div class="korpa-view">
-    <h2>Stavke u korpi</h2>
-    <div class="korpa-list">
+  <div class="cart-container">
+    <div class="cart-list">
       <div v-if="stavkeList && stavkeList.length > 0">
-        <div v-for="stavka in stavkeList" :key="stavka.id" class="korpa-card">
-          <div>Količina: {{ stavka.skrp_kolicina }}</div>
-          <!-- Prikazivanje podataka o parfemu koristeći stavka.skr_par_id -->
-          <h2 class="korpa-title">
-            {{ parfemi[stavka.skrp_par_id]?.par_naziv }}
+        <div v-for="(stavke, fabrikaId) in groupedByFabric" :key="fabrikaId">
+          <!-- Check if fabric data exists before rendering the fabric name -->
+          <h2 class="fabric-title" v-if="fabrike[fabrikaId]">
+            {{ fabrike[fabrikaId]?.fab_naziv }}
+            <!-- Fabric name -->
           </h2>
-          <img
-            :src="
-              'https://localhost:44333/resources' +
-              parfemi[stavka.skrp_par_id]?.par_slika
-            "
-            class="cokolada-image"
-            alt="Logo fabrike"
-          />
-
-          <p class="korpa-text">
-            Cena po komadu: {{ stavka.skrp_cena_pj }} RSD
-          </p>
-          <p class="korpa-text">
-            Ukupno: {{ stavka.skrp_kolicina * stavka.skrp_cena_pj }} RSD
-          </p>
-
-          <!-- Prikazivanje dodatnih informacija o parfemu -->
-          <div v-if="parfemi[stavka.skrp_par_id]" class="parfem-info">
-            <p class="korpa-text">
-              Mililitraža: {{ parfemi[stavka.skrp_par_id].par_mililitraza }} ml
-            </p>
-            <p class="korpa-text">
-              Opis: {{ parfemi[stavka.skrp_par_id].par_opis }}
-            </p>
-          </div>
-          <div class="pomocni-btn-div">
-            <button class="pomocni-btn" @click="inkrementKolicina(stavka.id)">
-              +
-            </button>
-            <button class="pomocni-btn" @click="dekrementKolicina(stavka.id)">
-              -
-            </button>
-            <button class="pomocni-btn" @click="deleteStavka(stavka.id)">
-              <i class="fa fa-trash"></i>
+          <div v-for="stavka in stavke" :key="stavka.id" class="cart-item">
+            <img
+              :src="
+                'https://localhost:44333/resources' +
+                parfemi[stavka.skrp_par_id]?.par_slika
+              "
+              class="item-image"
+              alt="Perfume Image"
+            />
+            <div class="item-details">
+              <h3 class="item-title">
+                {{ parfemi[stavka.skrp_par_id]?.par_naziv }}
+              </h3>
+              <p class="item-description">
+                {{ parfemi[stavka.skrp_par_id]?.par_opis }}
+              </p>
+              <p class="item-volume">
+                {{ parfemi[stavka.skrp_par_id]?.par_mililitraza }} ml
+              </p>
+              <p class="item-price">Price: {{ stavka.skrp_cena_pj }} RSD</p>
+              <p class="item-total">
+                Total: {{ stavka.skrp_kolicina * stavka.skrp_cena_pj }} RSD
+              </p>
+            </div>
+            <div class="item-quantity-controls">
+              <button
+                class="quantity-btn"
+                @click="dekrementKolicina(stavka.id)"
+              >
+                -
+              </button>
+              <span class="quantity-number">{{ stavka.skrp_kolicina }}</span>
+              <button
+                class="quantity-btn"
+                @click="inkrementKolicina(stavka.id)"
+              >
+                +
+              </button>
+            </div>
+            <button class="remove-btn" @click="deleteStavka(stavka.id)">
+              Remove
             </button>
           </div>
         </div>
-        <button class="kupi-btn">Kupi</button>
+        <div class="total-price">Total Price: {{ totalPrice }} RSD</div>
+        <button class="checkout-btn">
+          <i class="fa fa-credit-card" style="margin-right: 5px"></i> Checkout
+        </button>
       </div>
-      <p v-else class="no-items">Korpa je prazna</p>
+      <p v-else class="empty-cart-message">Your cart is empty</p>
     </div>
   </div>
 </template>
@@ -64,14 +73,67 @@ export default {
       stavkeList: [], // Lista stavki korpe
       parfemi: {}, // Objekat sa podacima o parfemima
       korisnikId: "", // ID korisnika
+      fabrike: {}, // Objekat sa podacima o fabrikama
     };
   },
+  computed: {
+    totalPrice() {
+      return this.stavkeList.reduce(
+        (acc, item) => acc + item.skrp_kolicina * item.skrp_cena_pj,
+        0
+      );
+    },
+    groupedByFabric() {
+      const grouped = {};
+      this.stavkeList.forEach((stavka) => {
+        const parfem = this.parfemi[stavka.skrp_par_id];
+        if (parfem) {
+          const fabrikaId = parfem.par_fab_id;
+          if (!grouped[fabrikaId]) {
+            grouped[fabrikaId] = [];
+          }
+          grouped[fabrikaId].push(stavka);
+        }
+      });
+      return grouped;
+    },
+  },
   methods: {
+    // async fetchStavkeKorpe() {
+    //   try {
+    //     const korisnikId = JSON.parse(localStorage.getItem("korisnik")).id;
+
+    //     const korpaResponse = await axios.get(
+    //       `https://localhost:44333/api/korpa/user/${korisnikId}`
+    //     );
+    //     if (korpaResponse.status === 200 && korpaResponse.data) {
+    //       const korpaId = korpaResponse.data.id;
+
+    //       const stavkeResponse = await axios.get(
+    //         `https://localhost:44333/api/stavka-korpe/korpa/${korpaId}`
+    //       );
+    //       this.stavkeList = stavkeResponse.data;
+
+    //       await Promise.all(
+    //         this.stavkeList.map(async (stavka) => {
+    //           if (!this.parfemi[stavka.skrp_par_id]) {
+    //             const parfemResponse = await axios.get(
+    //               `https://localhost:44333/api/parfem/${stavka.skrp_par_id}`
+    //             );
+    //             this.parfemi[stavka.skrp_par_id] = parfemResponse.data;
+    //             console.log("Parfem", parfemResponse.data);
+    //           }
+    //         })
+    //       );
+    //     }
+    //   } catch (error) {
+    //     console.error("Greška prilikom učitavanja stavki korpe:", error);
+    //   }
+    // },
+
     async fetchStavkeKorpe() {
       try {
         const korisnikId = JSON.parse(localStorage.getItem("korisnik")).id;
-        console.log(korisnikId);
-
         const korpaResponse = await axios.get(
           `https://localhost:44333/api/korpa/user/${korisnikId}`
         );
@@ -85,20 +147,30 @@ export default {
 
           await Promise.all(
             this.stavkeList.map(async (stavka) => {
-              if (!this.parfemi[stavka.skrp_par_id]) {
+              const parfemId = stavka.skrp_par_id;
+              if (!this.parfemi[parfemId]) {
                 const parfemResponse = await axios.get(
-                  `https://localhost:44333/api/parfem/${stavka.skrp_par_id}`
+                  `https://localhost:44333/api/parfem/${parfemId}`
                 );
-                this.parfemi[stavka.skrp_par_id] = parfemResponse.data;
+                const parfem = parfemResponse.data;
+                this.parfemi[parfemId] = parfem;
+
+                // Fetch fabric information if not already fetched
+                const fabrikaId = parfem.par_fab_id;
+                if (!this.fabrike[fabrikaId]) {
+                  const fabrikaResponse = await axios.get(
+                    `https://localhost:44333/api/fabrika/${fabrikaId}`
+                  );
+                  this.fabrike[fabrikaId] = fabrikaResponse.data;
+                }
               }
             })
           );
         }
       } catch (error) {
-        console.error("Greška prilikom učitavanja stavki korpe:", error);
+        console.error("Error loading cart items:", error);
       }
     },
-
     async inkrementKolicina(id) {
       try {
         const response = await axios.put(
@@ -167,80 +239,159 @@ export default {
 </script>
 
 <style scoped>
-.korpa-view {
-  width: 100%;
+.cart-container {
+  max-width: 960px;
   margin: 0 auto;
   padding: 20px;
-  font-family: "Arial", sans-serif;
-}
-
-.korpa-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.korpa-card {
-  background-color: white;
-  border-radius: 10px;
-  padding: 20px;
-  margin: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.korpa-title {
-  font-size: 20px;
-  margin: 15px 0;
+  font-family: "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
+    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   color: #333;
 }
 
-.korpa-text {
-  font-size: 16px;
-  color: #666;
-}
-
-.no-items {
-  color: #ccc;
+.cart-title {
   text-align: center;
+  margin-bottom: 20px;
   font-size: 24px;
 }
 
-.pomocni-btn-div {
+.cart-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  background-color: #ffffffcc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  transition: all 0.3s;
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+}
+
+.cart-item:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  scale: 1.01;
+}
+
+.item-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 5px;
+  margin-right: 20px;
+}
+
+.item-details {
+  flex-grow: 1;
+}
+
+.item-title {
+  font-size: 18px;
+  color: #000;
+}
+
+.item-description {
+  font-size: 14px;
+  color: #666;
+  margin: 5px 0;
+}
+
+.item-volume,
+.item-price,
+.item-total {
+  font-size: 16px;
+  color: #444;
+}
+
+.item-quantity-controls {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.quantity-btn {
+  background-color: #003c7c;
+  color: white;
+  font-size: medium;
+  border-radius: 3px;
+  border: none;
+  width: 28px;
+  height: 28px;
+  margin: 0 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.quantity-btn:hover {
+  background-color: #002c5c;
+}
+
+.quantity-number {
+  font-weight: 600;
+  min-width: 30px;
+  text-align: center;
+}
+
+.remove-btn {
+  text-transform: uppercase;
+  font-weight: 600;
+  background-color: #8a0f38;
+  color: white;
+  border-radius: 3px;
+  height: 28px;
+  border: none;
+  padding: 0 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.remove-btn:hover {
+  background-color: #6a0a2c;
+}
+
+.checkout-btn {
+  background-color: #0056b3;
+  color: white;
+  border-radius: 5px;
+  text-transform: uppercase;
+  font-weight: 500;
+  width: 100%;
+  padding: 10px 0;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.3s;
+}
+
+.checkout-btn:hover {
+  background-color: #003f7f;
+}
+
+.empty-cart-message {
+  text-align: center;
+  color: #aaa;
+  font-size: 18px;
+}
+
+.total-price {
   display: flex;
   justify-content: center;
+  padding: 10px;
+  font-size: 20px;
+  text-align: right;
+  color: #fff;
+  margin: 10px 0;
+  font-weight: bold;
 }
 
-.pomocni-btn {
-  background-color: #4caf50;
-  color: white;
-  width: 30px;
-  height: 30px;
-  margin: 5px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.pomocni-btn:hover {
-  background-color: #45a049;
-  scale: 1.1;
-}
-
-.kupi-btn {
-  background-color: #4caf50;
-  color: white;
-  width: 100px;
-  height: 40px;
-  margin: 5px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.kupi-btn:hover {
-  background-color: #45a049;
-  scale: 1.01;
+.fabric-title {
+  color: #fff;
 }
 </style>
