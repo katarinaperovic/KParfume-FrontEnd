@@ -30,6 +30,7 @@
       <router-link v-if="authState.isLoggedIn" to="/profile"
         >Profil</router-link
       >
+      <router-link to="/kupovine">Kupovine</router-link>
       <router-link to="/login">Logout</router-link>
     </nav>
 
@@ -138,12 +139,12 @@
 
 <script setup>
 import { useAuth } from "./auth";
-import { ref, onMounted, inject } from "vue";
+import { ref, onMounted, inject,watch } from "vue";
 
 const { state: authState, checkLoginStatus } = useAuth();
 const showRatingForm = ref(false);
 const rating = ref({
-  ocn_kor_id: null, // Set user ID from auth state if available
+  ocn_kor_id: null, 
   ocn_vrednost: null,
   ocn_kom: "",
   ocn_dat: new Date().toISOString().split("T")[0],
@@ -157,13 +158,39 @@ onMounted(() => {
   rating.value.ocn_kor_id = korisnikId.value;
 });
 
+
+watch(
+  () => authState.isLoggedIn,
+  (isLoggedIn) => {
+    if (isLoggedIn) {
+      const korisnik = JSON.parse(localStorage.getItem("korisnik"));
+      korisnikId.value = korisnik ? korisnik.id : "";
+      rating.value.ocn_kor_id = korisnikId.value;
+      // Resetovanje ocene kada se korisnik promeni
+      resetRating();
+    } else {
+      // Kada se korisnik izloguje, resetuj podatke o oceni
+      resetRating();
+    }
+  }
+);
+
+const resetRating = () => {
+  rating.value.ocn_kor_id = korisnikId.value;
+  rating.value.ocn_kom = "";
+  rating.value.ocn_vrednost = null;
+  rating.value.ocn_dat = new Date().toISOString().split("T")[0];
+};
+
+
+
 const submitRating = async () => {
   try {
     if (!rating.value.ocn_kom.trim()) {
       alert("Komentar je obavezan! Molimo popunite komentar.");
       return;
     }
-
+    console.log(rating.value);
     const response = await fetch("https://localhost:44333/api/ocena", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -171,10 +198,10 @@ const submitRating = async () => {
     });
 
     showRatingForm.value = false;
-    rating.value.ocn_kor_id = "";
+    rating.value.ocn_kor_id = korisnikId.value;
     rating.value.ocn_kom = "";
     rating.value.ocn_vrednost = "";
-    rating.value.ocn_dat = "";
+    rating.value.ocn_dat = new Date().toISOString().split("T")[0];
   } catch (error) {
     console.error("Error submitting rating:", error);
   }
@@ -220,7 +247,7 @@ header {
   color: #fff;
   text-decoration: none;
   padding: 15px 30px;
-  margin: 0 15px;
+  margin: 0 10px; /* ovde sredjujes blizinu ikonica za navbar!!*/
   border-radius: 50px;
   background: rgba(255, 255, 255, 0.1);
   transition: background 0.5s ease, box-shadow 0.3s ease, transform 0.3s ease;

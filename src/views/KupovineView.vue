@@ -96,6 +96,91 @@
       </div>
     </div>
   
+
+
+    <!--MENADZER-->
+
+     <!-- Search and Sort Options -->
+     <div v-if="korisnik.kor_uloga === 'menadzer'" class="search-sort">
+      <h2>Istorija kupovina iz vaše fabrike</h2>
+          <div class="search-filters">
+          
+            <label for="naziv">Ime kompanije:</label>
+          <input v-model="searchCriteria.nazivKompanije" id="naziv" type="text" />
+
+            <label for="priceFrom">Cena od:</label>
+            <input v-model.number="searchCriteria.priceFrom" id="priceFrom" type="number" />
+  
+            <label for="priceTo">Cena do:</label>
+            <input v-model.number="searchCriteria.priceTo" id="priceTo" type="number" />
+  
+          </div>
+          <div class="search-filters">
+
+           
+  <label for="dateFrom">Datum od:</label>
+  <input v-model="searchCriteria.dateFrom" id="dateFrom" type="date" />
+
+  <label for="dateTo">Datum do:</label>
+  <input v-model="searchCriteria.dateTo" id="dateTo" type="date" />
+
+  <label for="sortField">Sortiraj po:</label>
+  <select v-model="sortCriteria.field" id="sortField">
+    <option value="nazivKompanije">Ime kompanije</option>
+    <option value="cena">Cena</option>
+    <option value="datumVreme">Datum</option>
+  </select>
+
+  <label for="sortOrder">Redosled:</label>
+  <select v-model="sortCriteria.order" id="sortOrder">
+    <option value="asc">Rastuće</option>
+    <option value="desc">Opadajuće</option>
+  </select>
+</div>
+
+        </div>
+  
+  <!-- Prikaz kupovina -->
+  <div v-if="korisnik.kor_uloga === 'menadzer'" class="purchase-section">
+      <div v-if="filteredKupovineMen.length === 0">Nemate kupovina.</div>
+      <div v-for="kupovina in sortedKupovineMen" :key="kupovina.id" class="purchase">
+        <p>Datum i vreme: {{ kupovina.kup_datum }}</p>
+        <p>Ukupna cena: {{ kupovina.kup_uk_cena }} rsd</p>
+  
+        
+        <span v-if="users.length === 0">Nema korisnika</span>
+          <div v-if="users.length > 0" class="redovi">
+            Kompanija: <strong>{{ getUserInfo(kupovina.kup_kor_id).kor_ime_kompanije }}</strong> 
+            Ime i prezime menadžera: <strong>{{ getUserInfo(kupovina.kup_kor_id).kor_ime }} {{ getUserInfo(kupovina.kup_kor_id).kor_prezime }}</strong> 
+            Telefon: <strong>{{ getUserInfo(kupovina.kup_kor_id).kor_tel }}</strong> 
+            <p></p>
+            Adresa za slanje: <strong>{{  getUserInfo(kupovina.kup_kor_id).kor_adresa }}</strong> ,
+            <strong>{{  getUserInfo(kupovina.kup_kor_id).kor_pos_br }}</strong>
+            ,
+            <strong>{{  getUserInfo(kupovina.kup_kor_id).kor_grad }}</strong>,
+            <strong>{{  getUserInfo(kupovina.kup_kor_id).kor_drzava }}</strong>
+            
+            
+          </div>
+  
+          <div class="chocolates-container">
+  <div v-for="stavka in kupovina.stavkeKupovine" :key="stavka.id" class="chocolate">
+    <img :src="'https://localhost:44333/resources' + getParfemInfo(stavka.sk_par_id).par_slika" class="chocolate-image" alt="Slika parfema">
+    <p>Naziv: {{ getParfemInfo(stavka.sk_par_id).par_naziv }}</p>
+    <p>Cena: {{ stavka.sk_cena_pj }} rsd</p>
+    <p>Količina: {{ stavka.sk_kolicina }}</p>
+    <p>Ukupna cena: {{ stavka.sk_cena_pj * stavka.sk_kolicina }} rsd</p>
+  </div>
+</div>
+
+
+
+      </div>
+    </div>
+
+
+
+
     </div>
   </template>
   
@@ -117,6 +202,7 @@
   const parfemi = ref([]);
   const kupovine = ref([]);
   const fabrike = ref([]);
+  const users = ref([]);
   const showCommentForms = ref({});
   const existingCommentError = ref({});
   const commentText = ref({});
@@ -129,6 +215,7 @@
     dateFrom: null,
     dateTo: null,
     nazivFabrike: '',
+    nazivKompanije:''
   });
   
   const sortCriteria = ref({
@@ -149,6 +236,19 @@
   
     const getFabrikaInfo = (id) => {
       return fabrike.value.find(fabrika => String(fabrika.id) === String(id)) || {};
+    };
+
+    const getSviUseri = async () => {
+      try {
+        const response = await axios.get(`https://localhost:44333/api/users`);
+        users.value = response.data;
+      } catch (error) {
+        errorMessage.value = 'An error occurred while fetching fabrike data.';
+      }
+    };
+  
+    const getUserInfo = (id) => {
+      return users.value.find(user => String(user.id) === String(id)) || {};
     };
     
     const getParfemInfo = (id) => {
@@ -223,6 +323,24 @@ const hasReview = (kupovinaId) => {
       return 0;
     });
   });
+
+  const filteredKupovineMen = computed(() => {
+    return kupovine.value.filter(kupovina => {
+      const matchesPrice = (!searchCriteria.value.priceFrom || kupovina.kup_uk_cena >= searchCriteria.value.priceFrom) &&
+                           (!searchCriteria.value.priceTo || kupovina.kup_uk_cena <= searchCriteria.value.priceTo);
+      const matchesDate = (!searchCriteria.value.dateFrom || new Date(kupovina.kup_datum.split(' ')[0]) >= new Date(searchCriteria.value.dateFrom)) &&
+                          (!searchCriteria.value.dateTo || new Date(kupovina.kup_datum.split(' ')[0]) <= new Date(searchCriteria.value.dateTo));
+      const matchesKompanija = !searchCriteria.value.nazivKompanije || getUserInfo(kupovina.kup_kor_id).kor_ime_kompanije.toLowerCase().includes(searchCriteria.value.nazivKompanije.toLowerCase());
+  
+      return String(kupovina.kup_fab_id) === String(korisnik.value.kor_fab_id) && matchesPrice && matchesDate && matchesKompanija;
+    }).sort((a, b) => {
+      const uA = getUserInfo(a.kup_kor_id).kor_ime_kompanije.toLowerCase();
+      const uB = getUserInfo(b.kup_kor_id).kor_ime_kompanije.toLowerCase();
+      if (uA < uB) return -1;
+      if (uA > uB) return 1;
+      return 0;
+    });
+  });
   
   const sortedKupovine = computed(() => {
     return [...filteredKupovine.value].sort((a, b) => {
@@ -237,6 +355,25 @@ const hasReview = (kupovinaId) => {
         const fabrikaA = getFabrikaInfo(a.kup_fab_id).fab_naziv.toLowerCase();
         const fabrikaB = getFabrikaInfo(b.kup_fab_id).fab_naziv.toLowerCase();
         compareResult = fabrikaA < fabrikaB ? -1 : (fabrikaA > fabrikaB ? 1 : 0);
+      }
+  
+      return sortCriteria.value.order === 'asc' ? compareResult : -compareResult;
+    });
+  });
+
+  const sortedKupovineMen = computed(() => {
+    return [...filteredKupovineMen.value].sort((a, b) => {
+      let compareResult = 0;
+      if (sortCriteria.value.field === 'cena') {
+        compareResult = a.kup_uk_cena - b.kup_uk_cena;
+      } else if (sortCriteria.value.field === 'datumVreme') {
+        const dateA = new Date(a.kup_datum.split(' ')[0]);
+        const dateB = new Date(b.kup_datum.split(' ')[0]);
+        compareResult = dateA - dateB;
+      } else if (sortCriteria.value.field === 'nazivKompanije') {
+        const userA = getUserInfo(a.kup_kor_id).kor_ime_kompanije.toLowerCase();
+        const userB = getUserInfo(b.kup_kor_id).kor_ime_kompanije.toLowerCase();
+        compareResult = userA < userB ? -1 : (userA > userB ? 1 : 0);
       }
   
       return sortCriteria.value.order === 'asc' ? compareResult : -compareResult;
@@ -294,6 +431,7 @@ const hasReview = (kupovinaId) => {
   }
 
   await getSveFabrike();  
+  await getSviUseri();  
   await getSveParfemi();  
   getKupovine();  
   await getSveRecenzije();  
