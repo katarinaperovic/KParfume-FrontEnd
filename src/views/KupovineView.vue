@@ -45,8 +45,8 @@
   <div v-if="korisnik.kor_uloga === 'kupac'" class="purchase-section">
       <div v-if="filteredKupovine.length === 0">Nemate kupovina.</div>
       <div v-for="kupovina in sortedKupovine" :key="kupovina.id" class="purchase">
-        <p>Datum i vreme: {{ kupovina.kup_datum }}</p>
-        <p>Ukupna cena: {{ kupovina.kup_uk_cena }} rsd</p>
+        <p>Datum i vreme: {{ new Date(kupovina.kup_datum).toLocaleString() }}</p>
+        <p class="ukcena">Ukupna cena: {{ kupovina.kup_uk_cena }} rsd</p>
   
         
         <span v-if="fabrike.length === 0">Nema fabrike</span>
@@ -144,8 +144,8 @@
   <div v-if="korisnik.kor_uloga === 'menadzer'" class="purchase-section">
       <div v-if="filteredKupovineMen.length === 0">Nemate kupovina.</div>
       <div v-for="kupovina in sortedKupovineMen" :key="kupovina.id" class="purchase">
-        <p>Datum i vreme: {{ kupovina.kup_datum }}</p>
-        <p>Ukupna cena: {{ kupovina.kup_uk_cena }} rsd</p>
+        <p>Datum i vreme: {{ new Date(kupovina.kup_datum).toLocaleString() }}</p>
+        <p class="ukcena">Ukupna cena: {{ kupovina.kup_uk_cena }} rsd</p>
   
         
         <span v-if="users.length === 0">Nema korisnika</span>
@@ -441,7 +441,7 @@ const hasReview = (kupovinaId) => {
   
   <style scoped>
   .profile-container {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 20px auto;
   padding: 20px;
   border: 1px solid #ddd;
@@ -512,6 +512,11 @@ form {
   background-color: #0056b3;
 }
 
+.ukcena{
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 26px;
+
+}
 .error {
   color: red;
   margin-top: 10px;
@@ -540,7 +545,7 @@ form {
 
 .chocolate {
   flex: 0 0 auto;
-  width: 160px;
+  width: 180px;
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

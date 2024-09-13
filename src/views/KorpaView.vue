@@ -27,9 +27,9 @@
               <p class="item-volume">
                 {{ parfemi[stavka.skrp_par_id]?.par_mililitraza }} ml
               </p>
-              <p class="item-price">Price: {{ stavka.skrp_cena_pj }} RSD</p>
+              <p class="item-price">Cena: {{ stavka.skrp_cena_pj }} RSD</p>
               <p class="item-total">
-                Total: {{ stavka.skrp_kolicina * stavka.skrp_cena_pj }} RSD
+                Ukupna cena: {{ stavka.skrp_kolicina * stavka.skrp_cena_pj }} RSD
               </p>
             </div>
             <div class="item-quantity-controls">
@@ -49,17 +49,17 @@
               </button>
             </div>
             <button class="remove-btn" @click="deleteStavka(stavka.id)">
-              Remove
+              Izbaci
             </button>
           </div>
         </div>
         <div class="total-price">Ukupan iznos: {{ totalPrice }} RSD</div>
         <button class="checkout-btn" @click="goToPayment">
           <i class="fa fa-credit-card" style="margin-right: 5px"></i> Nastavi na
-          placanje
+          plaćanje
         </button>
       </div>
-      <p v-else class="empty-cart-message">Your cart is empty</p>
+      <p v-else class="empty-cart-message">Vaša korpa je prazna</p>
     </div>
   </div>
 </template>
@@ -188,7 +188,7 @@ export default {
         );
         if (response.status === 200) {
           this.fetchStavkeKorpe();
-          toastr.success("Item removed");
+          toastr.success("Proizvod izbačen");
         }
       } catch (error) {
         toastr.error("Error removing item");

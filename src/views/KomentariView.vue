@@ -88,6 +88,7 @@ async function loadKomentari() {
   flex-wrap: wrap;
   justify-content: flex-start; /* Rasporedi kartice ravnomerno */
   gap: 15px; /* Razmak između kartica */
+  padding-left: 10px;
 }
 
 .vest-card {
