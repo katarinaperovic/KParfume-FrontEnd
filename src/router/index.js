@@ -1,22 +1,23 @@
-import { createRouter, createWebHashHistory } from 'vue-router';
-import HomeView from '../views/HomeView.vue';
-import AboutView from '../views/AboutView.vue';
-import LoginView from '../views/LoginView.vue';
-import FabrikeView from '../views/FabrikeView.vue';
-import UsersView from '../views/UsersView.vue';
-import VestiView from '../views/VestiView.vue';
-import OceneView from '../views/OceneView.vue';
-import KuponiView from '../views/KuponiView.vue';
-import NewsDetailView from '../views/NewsDetailView.vue';
-import ProfileView from '../views/ProfileView.vue';
-import ParfemiView from '../views/ParfemiView.vue';
-import FabrikaDetaljiView from '../views/FabrikaDetaljiView.vue';
-import FabrikaDetaljiParfemi from '../views/FabrikaDetaljiParfemi.vue';
-import KomentariView from '@/views/KomentariView.vue';
-import KomentariZahteviView from '@/views/KomentariZahteviView.vue';
-import KorpaView from '@/views/KorpaView.vue';
-import KupovineView from '@/views/KupovineView.vue';
+import { createRouter, createWebHashHistory } from "vue-router";
+import HomeView from "../views/HomeView.vue";
+import AboutView from "../views/AboutView.vue";
+import LoginView from "../views/LoginView.vue";
+import FabrikeView from "../views/FabrikeView.vue";
+import UsersView from "../views/UsersView.vue";
+import VestiView from "../views/VestiView.vue";
+import OceneView from "../views/OceneView.vue";
+import KuponiView from "../views/KuponiView.vue";
+import NewsDetailView from "../views/NewsDetailView.vue";
+import ProfileView from "../views/ProfileView.vue";
+import ParfemiView from "../views/ParfemiView.vue";
+import FabrikaDetaljiView from "../views/FabrikaDetaljiView.vue";
+import FabrikaDetaljiParfemi from "../views/FabrikaDetaljiParfemi.vue";
+import KomentariView from "@/views/KomentariView.vue";
+import KomentariZahteviView from "@/views/KomentariZahteviView.vue";
+import KorpaView from "@/views/KorpaView.vue";
+import KupovineView from "@/views/KupovineView.vue";
 import PaymentView from "@/views/PaymentView.vue";
+import IzvestajView from "@/views/IzvestajView.vue";
 
 const routes = [
   {
@@ -115,10 +116,15 @@ const routes = [
     component: PaymentView,
   },
   {
-    path: '/kupovine',
-    name: 'kupovine',
-    component: KupovineView
-  }
+    path: "/kupovine",
+    name: "kupovine",
+    component: KupovineView,
+  },
+  {
+    path: "/izvestaj",
+    name: "izvestaj",
+    component: IzvestajView,
+  },
 ];
 
 const router = createRouter({

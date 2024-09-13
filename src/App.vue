@@ -30,6 +30,7 @@
       <router-link v-if="authState.isLoggedIn" to="/profile"
         >Profil</router-link
       >
+      <router-link to="/izvestaj">Izvestaji</router-link>
       <router-link to="/kupovine">Kupovine</router-link>
       <router-link to="/login">Logout</router-link>
     </nav>
@@ -139,12 +140,12 @@
 
 <script setup>
 import { useAuth } from "./auth";
-import { ref, onMounted, inject,watch } from "vue";
+import { ref, onMounted, inject, watch } from "vue";
 
 const { state: authState, checkLoginStatus } = useAuth();
 const showRatingForm = ref(false);
 const rating = ref({
-  ocn_kor_id: null, 
+  ocn_kor_id: null,
   ocn_vrednost: null,
   ocn_kom: "",
   ocn_dat: new Date().toISOString().split("T")[0],
@@ -157,7 +158,6 @@ onMounted(() => {
   console.log(korisnikId.value);
   rating.value.ocn_kor_id = korisnikId.value;
 });
-
 
 watch(
   () => authState.isLoggedIn,
@@ -181,8 +181,6 @@ const resetRating = () => {
   rating.value.ocn_vrednost = null;
   rating.value.ocn_dat = new Date().toISOString().split("T")[0];
 };
-
-
 
 const submitRating = async () => {
   try {
