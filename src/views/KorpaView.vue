@@ -29,7 +29,8 @@
               </p>
               <p class="item-price">Cena: {{ stavka.skrp_cena_pj }} RSD</p>
               <p class="item-total">
-                Ukupna cena: {{ stavka.skrp_kolicina * stavka.skrp_cena_pj }} RSD
+                Ukupna cena:
+                {{ stavka.skrp_kolicina * stavka.skrp_cena_pj }} RSD
               </p>
             </div>
             <div class="item-quantity-controls">
@@ -54,6 +55,18 @@
           </div>
         </div>
         <div class="total-price">Ukupan iznos: {{ totalPrice }} RSD</div>
+        <!-- Coupon Section -->
+        <div class="coupon-section">
+          <input
+            type="text"
+            v-model="couponCode"
+            placeholder="Unesite kod kupona"
+            class="coupon-input"
+          />
+          <button @click="applyCoupon" class="coupon-button">
+            Primenite kupon
+          </button>
+        </div>
         <button class="checkout-btn" @click="goToPayment">
           <i class="fa fa-credit-card" style="margin-right: 5px"></i> Nastavi na
           plaćanje
@@ -75,10 +88,17 @@ export default {
       stavkeList: [], // List of cart items
       parfemi: {}, // Perfume data
       fabrike: {}, // Fabric data
+      couponCode: "",
+      discountedTotalPrice: null,
+      appliedCouponId: null,
     };
   },
   computed: {
     totalPrice() {
+      // If a discounted price exists, return it, otherwise calculate the normal price
+      if (this.discountedTotalPrice !== null) {
+        return this.discountedTotalPrice;
+      }
       return this.stavkeList.reduce(
         (acc, item) => acc + item.skrp_kolicina * item.skrp_cena_pj,
         0
@@ -200,8 +220,59 @@ export default {
         state: {
           totalPrice: this.totalPrice,
           stavkeList: JSON.stringify(this.stavkeList),
+          kup_kpn_id: this.appliedCouponId,
         },
       });
+    },
+    async applyCoupon() {
+      try {
+        const korisnik = localStorage.getItem("korisnik");
+        if (!korisnik) {
+          toastr.error("User is not logged in");
+          return;
+        }
+        const korisnikId = JSON.parse(korisnik).id;
+
+        const kuponResponse = await axios.get(
+          `https://localhost:44333/api/kupon/kod-user/${this.couponCode}/${korisnikId}`
+        );
+
+        if (kuponResponse.status === 200) {
+          const kupon = kuponResponse.data;
+          if (kupon) {
+            if (kupon.kpn_pk_valid) {
+              const kupovineResponse = await axios.get(
+                `https://localhost:44333/api/kupovina/user/${korisnikId}`
+              );
+              if (kupovineResponse.data.length > 0) {
+                toastr.error("Vec imate kupovine, ne mozete koristiti kupon");
+                return;
+              }
+            }
+            const popust = kupon.kpn_popust;
+            const discountAmount = (this.totalPrice * popust) / 100;
+            const newTotalPrice = this.totalPrice - discountAmount;
+
+            // Set the discounted price, or set it to 0 if it goes below 0
+            this.discountedTotalPrice = newTotalPrice < 0 ? 0 : newTotalPrice;
+
+            this.appliedCouponId = kuponResponse.data.id;
+
+            toastr.success("Kupon uspešno primenjen");
+          } else {
+            toastr.error("Pogrešan kod kupona");
+          }
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          // Handle 404 error (coupon code not found)
+          toastr.error("Kod kupona nije pronadjen. Molimo pokusajte ponovo.");
+        } else {
+          // Handle other errors
+          toastr.error("Greska prilikom primene koda kupona");
+        }
+        console.error("Error applying coupon code:", error);
+      }
     },
   },
   mounted() {
@@ -371,5 +442,35 @@ export default {
 .fabric-title {
   color: #fff;
   animation: flyIn 0.8s ease forwards;
+}
+
+.coupon-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.coupon-input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+.coupon-button {
+  padding: 10px 20px;
+  background-color: #8a0f38;
+  text-transform: uppercase;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.coupon-button:hover {
+  background-color: #6a0a2c;
 }
 </style>
