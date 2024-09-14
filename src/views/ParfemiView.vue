@@ -29,7 +29,15 @@
           <h3 class="mililitrazaUgao">{{ parfem.par_mililitraza }}ml</h3>
         </div>
         <div class="card-content">
-          <strong>{{ parfem.par_naziv }}</strong>
+          <div class="title-fav-container">
+            <i 
+              class="fa-solid fa-heart fav-icon"
+              @click="addToFavorit(parfem)"
+              v-if="korisnikUloga === 'kupac'"
+            ></i>
+            
+            <strong>{{ parfem.par_naziv }}</strong>
+          </div>
 
           <div class="cokolada-details">
             <div class="category-vrsta-container">
@@ -82,7 +90,7 @@
               ></p>
             </div>
 
-            <p>Količina: {{ parfem.par_kolicina }}</p>
+            <p>Dostupna količina: {{ parfem.par_kolicina }}</p>
             <p class="opis">{{ parfem.par_opis }}</p>
           </div>
 
@@ -121,6 +129,7 @@
             >
               Dodaj u korpu
             </button>
+            
           </div>
         </div>
       </div>
@@ -217,6 +226,7 @@ import axios from "axios";
 import { ref, onMounted, computed, defineProps } from "vue";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
+
 
 const props = defineProps({
   fabrikaId: String,
@@ -494,6 +504,34 @@ const addToCart = async (parfem) => {
     toastr.error("Parfem je vec dodat u korpu!");
   }
 };
+
+
+const addToFavorit = async (parfem) => {
+  try {
+    const korisnikId = korisnikovId.value;
+    const today= new Date().toISOString().split('T')[0];
+
+    if (korisnikovId) {
+      
+
+      const favorit = {
+        fav_kor_id: korisnikId,
+        fav_dat: today,
+        fav_par_id: parfem.id
+      };
+
+      await axios.post("https://localhost:44333/api/favorit", favorit);
+
+      toastr.success("Parfem je uspešno dodat u favorite!");
+    } else {
+      toastr.error("error");
+    }
+  } catch (error) {
+    console.error("Greška prilikom dodavanja u favorite:", error);
+    toastr.error("Parfem se već nalazi u favoritima!");
+  }
+};
+
 
 const onFileSelected = async (event) => {
   const file = event.target.files[0];
@@ -922,9 +960,35 @@ h2 {
   font-size: 1.2rem; /* Povećanje veličine fonta */
 }
 
-/* Dodaj granicu oko celog elementa */
+
 
 .button-container button.invisible {
   visibility: hidden !important;
 }
+
+.title-fav-container {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centers the whole container (icon + title) */
+  position: relative; /* To allow absolute positioning of the heart icon */
+}
+
+.fav-icon {
+  position: absolute;
+ bottom: 10px;
+  left: 0;
+  color: rgb(83, 36, 36);
+  cursor: pointer;
+  font-size: 1.5rem;
+  
+  /* Add border */
+  border: 2px solid rgb(83, 36, 36); /* You can adjust the color and width */
+  border-radius: 50%; /* To make it circular around the heart */
+  padding: 5px; 
+  box-sizing: border-box; 
+}
+
+
+
+
 </style>
