@@ -30,14 +30,14 @@
         </div>
         <div class="card-content">
           <div class="title-fav-container">
-            <i 
-              class="fa-solid fa-heart fav-icon"
-              @click="addToFavorit(parfem)"
-              v-if="korisnikUloga === 'kupac'"
-            ></i>
-            
-            <strong>{{ parfem.par_naziv }}</strong>
-          </div>
+          <!-- Conditionally render the heart icon -->
+          <i
+            :class="isFavorite(parfem.id) ? 'fa-solid fa-heart fav-icon' : 'fa-regular fa-heart fav-icon'"
+            @click="toggleFavorite(parfem)"
+            v-if="korisnikUloga === 'kupac'"
+          ></i>
+          <strong>{{ parfem.par_naziv }}</strong>
+        </div>
 
           <div class="cokolada-details">
             <div class="category-vrsta-container">
@@ -233,6 +233,7 @@ const props = defineProps({
 });
 
 const parfemi = ref([]);
+const favorites = ref([]);
 const cene = ref([]);
 const editingParfem = ref(null);
 const editedParfem = ref({});
@@ -308,11 +309,13 @@ const filteredParfemi = computed(() => {
 
 onMounted(() => {
   loadParfemi();
+  
 
   const korisnik = JSON.parse(localStorage.getItem("korisnik"));
   korisnikUloga.value = korisnik ? korisnik.kor_uloga : "";
   korisnikFabrikaId.value = korisnik ? korisnik.kor_fab_id : "";
   korisnikovId.value = korisnik ? korisnik.id : "";
+  loadFavorites();
 });
 
 async function loadParfemi() {
@@ -506,6 +509,43 @@ const addToCart = async (parfem) => {
 };
 
 
+async function loadFavorites() {
+  try {
+    const korisnikId = korisnikovId.value;
+   
+    const response = await axios.get(`https://localhost:44333/api/favorit`);
+    console.log("Favs svi:", response.data);
+
+    const fav = response.data.filter(f => String(f.fav_kor_id) === String(korisnikId));
+
+    console.log("Favs:", fav);
+
+    // Mapiraju se na niz svi id parfema u toj listi gde je kor id 
+    favorites.value = fav.map(fav => fav.fav_par_id);
+
+  } catch (error) {
+    console.error("Error loading favorites:", error);
+  }
+}
+
+
+const isFavorite = (parfemId) => {
+  return favorites.value.includes(parfemId);
+};
+
+
+
+const toggleFavorite = async (parfem) => {
+  if (isFavorite(parfem.id)) {
+   
+    await removeFromFavorites(parfem);
+  } else {
+    
+    await addToFavorit(parfem);
+  }
+};
+
+
 const addToFavorit = async (parfem) => {
   try {
     const korisnikId = korisnikovId.value;
@@ -521,7 +561,7 @@ const addToFavorit = async (parfem) => {
       };
 
       await axios.post("https://localhost:44333/api/favorit", favorit);
-
+      favorites.value.push(parfem.id); 
       toastr.success("Parfem je uspešno dodat u favorite!");
     } else {
       toastr.error("error");
@@ -529,6 +569,18 @@ const addToFavorit = async (parfem) => {
   } catch (error) {
     console.error("Greška prilikom dodavanja u favorite:", error);
     toastr.error("Parfem se već nalazi u favoritima!");
+  }
+};
+
+
+const removeFromFavorites = async (parfem) => {
+  try {
+    const korisnikId = korisnikovId.value;
+    await axios.delete(`https://localhost:44333/api/favorit/${parfem.id}/${korisnikId}`);
+    favorites.value = favorites.value.filter(favId => favId !== parfem.id); // Remove the perfume ID from the favorites list
+
+  } catch (error) {
+    console.error("Error removing from favorites:", error);
   }
 };
 
@@ -607,15 +659,15 @@ h2 {
 
 .nedostupan {
   position: absolute;
-  top: 10px; /* Udaljenost od vrha */
-  left: 10px; /* Udaljenost od leva */
+  top: 10px; 
+  left: 10px; 
   background-color: rgba(
     255,
     0,
     0,
     0.7
-  ); /* Poluproziran crveni pozadinski boja */
-  color: white; /* Boja teksta */
+  ); 
+  color: white; 
   padding: 5px 10px;
   border-radius: 5px;
   font-size: 1.2rem;
@@ -641,15 +693,15 @@ h2 {
 
 .mililitrazaUgao {
   position: absolute;
-  bottom: 10px; /* Udaljenost od dna*/
-  right: 10px; /* Udaljenost od leva */
+  bottom: 10px; 
+  right: 10px; 
   background-color: rgba(
     82,
     8,
     39,
     0.834
-  ); /* Poluproziran crveni pozadinski boja */
-  color: white; /* Boja teksta */
+  ); 
+  color: white; 
   padding: 5px 10px;
   border-radius: 5px;
   font-size: 1.2rem;
@@ -658,7 +710,7 @@ h2 {
 
 .cokolada-image {
   width: 100%;
-  height: 150px; /* Adjusted for better visuals */
+  height: 150px;
   object-fit: cover;
   border-radius: 10px;
 }
@@ -943,21 +995,21 @@ h2 {
 .kat-zen,
 .kat-muski,
 .kat-unisex {
-  font-size: 1.2rem; /* Povećanje veličine fonta */
+  font-size: 1.2rem; 
 }
 
 .vrsta-cvetni,
 .vrsta-orijentalni,
 .vrsta-citrusni,
 .vrsta-drvenasti {
-  font-size: 1.2rem; /* Povećanje veličine fonta */
+  font-size: 1.2rem; 
 }
 
 .tip-zimski,
 .tip-jesenji,
 .tip-prolecni,
 .tip-letnji {
-  font-size: 1.2rem; /* Povećanje veličine fonta */
+  font-size: 1.2rem; 
 }
 
 
@@ -969,23 +1021,29 @@ h2 {
 .title-fav-container {
   display: flex;
   align-items: center;
-  justify-content: center; /* Centers the whole container (icon + title) */
-  position: relative; /* To allow absolute positioning of the heart icon */
+  justify-content: center; 
+  position: relative; 
 }
 
 .fav-icon {
   position: absolute;
- bottom: 10px;
+  bottom: 10px;
   left: 0;
   color: rgb(83, 36, 36);
   cursor: pointer;
   font-size: 1.5rem;
-  
-  /* Add border */
-  border: 2px solid rgb(83, 36, 36); /* You can adjust the color and width */
-  border-radius: 50%; /* To make it circular around the heart */
-  padding: 5px; 
-  box-sizing: border-box; 
+  border: 2px solid rgb(83, 36, 36);
+  border-radius: 50%;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.fa-regular.fa-heart {
+  color: grey;
+}
+
+.fa-solid.fa-heart {
+  color: red;
 }
 
 
