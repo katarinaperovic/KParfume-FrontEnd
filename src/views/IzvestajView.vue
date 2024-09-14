@@ -51,7 +51,6 @@ export default {
   methods: {
     async fetchIzvestaji() {
       try {
-        // Hardcoded author ID for now
         const korisnik = localStorage.getItem("korisnik");
         if (!korisnik) {
           toastr.error("User is not logged in");

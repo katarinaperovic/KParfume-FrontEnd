@@ -18,6 +18,7 @@ import KorpaView from "@/views/KorpaView.vue";
 import KupovineView from "@/views/KupovineView.vue";
 import PaymentView from "@/views/PaymentView.vue";
 import IzvestajView from "@/views/IzvestajView.vue";
+import FavoritiView from "@/views/FavoritiView.vue";
 
 const routes = [
   {
@@ -124,6 +125,11 @@ const routes = [
     path: "/izvestaj",
     name: "izvestaj",
     component: IzvestajView,
+  },
+  {
+    path: "/favoriti",
+    name: "favoriti",
+    component: FavoritiView,
   },
 ];
 

@@ -54,6 +54,7 @@
       <router-link to="/">Home</router-link>
       <router-link to="/vesti">Vesti</router-link>
       <router-link to="/kuponi">Kuponi</router-link>
+      <router-link to="/favoriti">Favoriti</router-link>
       <router-link v-if="authState.isLoggedIn" to="/profile"
         >Profil</router-link
       >
