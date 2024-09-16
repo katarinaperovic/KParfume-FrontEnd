@@ -319,10 +319,10 @@ header:after {
   content: "";
   position: absolute;
   bottom: -100px;
-  right: -100px;
+  right: 30px;
   width: 200px;
   height: 200px;
-  background-color: rgba(63, 94, 251, 0.7);
+  background-color: rgba(63, 94, 251, 0.55);
   filter: blur(100px);
   z-index: -1;
   animation: glow 5s infinite alternate;
@@ -457,5 +457,25 @@ body {
 
 .rating-form .close-modal:hover {
   color: #594641;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #6666664b;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 10px;
+  border: 1px solid #f1f1f18e;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: transparent;
 }
 </style>
