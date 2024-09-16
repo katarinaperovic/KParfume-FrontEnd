@@ -21,7 +21,7 @@ export default {
       parfemi: {}, // Holds the perfume data
       kup_kpn_id: null, // Holds the KPN ID
       discountPercentage: 0, // Holds the discount percentage
-      updateCoupon: false,
+      //updateCoupon: false,
     };
   },
   methods: {
@@ -97,11 +97,11 @@ export default {
             return actions.order.capture().then((details) => {
               if (details.status === "COMPLETED") {
                 this.processSuccessfulTransaction(details);
-                if (this.updateCoupon) {
-                  axios.put(
-                    `https://localhost:44333/api/kupon/iskoriscen/${this.kup_kpn_id}`
-                  );
-                }
+                // if (this.updateCoupon) {
+                axios.put(
+                  `https://localhost:44333/api/kupon/iskoriscen/${this.kup_kpn_id}`
+                );
+                // }
               }
             });
           },
@@ -204,9 +204,9 @@ export default {
           .get(`https://localhost:44333/api/kupon/${this.kup_kpn_id}`)
           .then((response) => {
             this.discountPercentage = response.data.kpn_popust;
-            if (response.data.kpn_pk_valid) {
-              this.updateCoupon = true;
-            }
+            // if (response.data.kpn_pk_valid) {
+            //   this.updateCoupon = true;
+            // }
           })
           .catch((error) => {
             console.error("Error fetching kupovina data:", error);
