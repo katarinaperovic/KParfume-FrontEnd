@@ -6,7 +6,7 @@
         <tr>
           <th>Izvestaj</th>
           <th>Datum</th>
-          <th>Actions</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -19,7 +19,7 @@
               :href="'https://localhost:44333/resources' + izvestaj.izv_putanja"
               target="_blank"
             >
-              Open
+              Otvori
             </a>
           </td>
         </tr>
