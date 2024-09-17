@@ -181,7 +181,7 @@ export default {
           }
         }
       } catch (error) {
-        toastr.error("Error increasing quantity");
+        toastr.error("Nema dovoljno proizvoda na stanju");
       }
     },
     async dekrementKolicina(id) {

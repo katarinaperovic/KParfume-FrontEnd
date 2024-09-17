@@ -98,9 +98,15 @@ export default {
               if (details.status === "COMPLETED") {
                 this.processSuccessfulTransaction(details);
                 // if (this.updateCoupon) {
-                axios.put(
-                  `https://localhost:44333/api/kupon/iskoriscen/${this.kup_kpn_id}`
-                );
+                if (this.kup_kpn_id) {
+                  axios
+                    .put(
+                      `https://localhost:44333/api/kupon/iskoriscen/${this.kup_kpn_id}`
+                    )
+                    .catch((error) =>
+                      console.error("Error updating coupon:", error)
+                    );
+                }
                 // }
               }
             });
