@@ -637,7 +637,10 @@ const dodajParfem = async (fabrikaId) => {
 <style scoped>
 .fabrike {
   width: 100%;
+  color: #fffdfd;
 }
+
+
 
 .filters {
   display: flex;
@@ -851,12 +854,12 @@ border-radius: 10px;
 
 .moja-fabrika-border {
   border-color: #ff9800; 
-  background-color: #fdf0da; 
+  background-color: #605c11; 
 }
 
 .moja-fabrika {
   border-color: #ff9800; 
-  background-color: #fdf0da; 
+  background-color: #8d6b16; 
 }
 .errors{
   color: red;

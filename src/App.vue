@@ -27,11 +27,11 @@
       <router-link to="/">Home</router-link>
       <router-link to="/vesti">Vesti</router-link>
       <router-link to="/komentariZahtevi">Zahtevi za komentar </router-link>
+      <router-link to="/izvestaj">Izvestaji</router-link>
+      <router-link to="/kupovine">Kupovine</router-link>
       <router-link v-if="authState.isLoggedIn" to="/profile"
         >Profil</router-link
       >
-      <router-link to="/izvestaj">Izvestaji</router-link>
-      <router-link to="/kupovine">Kupovine</router-link>
       <router-link to="/login">Logout</router-link>
     </nav>
 
@@ -54,11 +54,14 @@
       <router-link to="/">Home</router-link>
       <router-link to="/vesti">Vesti</router-link>
       <router-link to="/kuponi">Kuponi</router-link>
-      <router-link to="/favoriti">Favoriti</router-link>
+      
+      
+      <router-link to="/kupovine">Kupovine</router-link>
       <router-link v-if="authState.isLoggedIn" to="/profile"
         >Profil</router-link
       >
-      <router-link to="/kupovine">Kupovine</router-link>
+      <router-link to="/favoriti"><i class=" fa-solid fa-heart fav-icon" style="margin-right: 5px"></i> Favoriti</router-link>
+     
       <router-link to="/korpa">
         <i class="fa fa-shopping-cart" style="margin-right: 5px"></i> Korpa
       </router-link>

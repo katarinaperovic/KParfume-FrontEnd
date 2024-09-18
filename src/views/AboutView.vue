@@ -7,6 +7,7 @@
         <label for="kor_email">Email:</label>
         <input type="email" id="kor_email" v-model="korisnik.kor_email" required>
       </div>
+      <div class="form-group-row">
       <div class="form-group">
         <label for="kor_lozinka">Lozinka:</label>
         <input type="password" id="kor_lozinka" v-model="korisnik.kor_lozinka" required>
@@ -14,7 +15,8 @@
       <div class="form-group">
         <label for="potvrdaLozinke">Potvrda lozinke:</label>
         <input type="password" id="potvrdaLozinke" v-model="potvrdaLozinke" required>
-      </div>
+      </div></div>
+      <div class="form-group-row">
       <div class="form-group">
         <label for="kor_ime">Ime:</label>
         <input type="text" id="kor_ime" v-model="korisnik.kor_ime" required pattern="[A-Za-z ]+" title="Molimo unesite samo slova">
@@ -22,13 +24,14 @@
       <div class="form-group">
         <label for="kor_prezime">Prezime:</label>
         <input type="text" id="kor_prezime" v-model="korisnik.kor_prezime" required pattern="[A-Za-z ]+" title="Molimo unesite samo slova">
-      </div>
+      </div></div>
 
       <div >
         <div class="form-group">
           <label for="kor_ime_kompanije">Ime kompanije:</label>
           <input type="text" id="kor_ime_kompanije" v-model="korisnik.kor_ime_kompanije">
         </div>
+        <div class="form-group-row">
         <div class="form-group">
           <label for="kor_adresa">Adresa kompanije:</label>
           <input type="text" id="kor_adresa" v-model="korisnik.kor_adresa">
@@ -36,7 +39,8 @@
         <div class="form-group">
           <label for="kor_grad">Grad:</label>
           <input type="text" id="kor_grad" v-model="korisnik.kor_grad" required pattern="[A-Za-z ]+" title="Molimo unesite samo slova">
-        </div>
+        </div></div>
+        <div class="form-group-row">
         <div class="form-group">
           <label for="kor_pos_br">Poštanski broj:</label>
           <input type="number" id="kor_pos_br" v-model="korisnik.kor_pos_br">
@@ -44,7 +48,7 @@
         <div class="form-group">
           <label for="kor_drzava">Država:</label>
           <input type="text" id="kor_drzava" v-model="korisnik.kor_drzava" required pattern="[A-Za-z ]+" title="Molimo unesite samo slova">
-        </div>
+        </div></div>
         <div class="form-group">
           <label for="kor_tel">Telefon:</label>
           <input type="text" id="kor_tel" v-model="korisnik.kor_tel">
@@ -135,14 +139,15 @@ export default {
   margin: 40px auto;
   padding: 40px;
   border-radius: 15px;
-  background: linear-gradient(145deg, #eb9f48, #ffffff);
+  background: linear-gradient(145deg, #662c2f, #ffffff);
   box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.1), -10px -10px 20px rgba(255, 255, 255, 0.8);
   transition: box-shadow 0.3s ease;
+  
 }
 
 h1 {
   text-align: center;
-  color: #4f2a06;
+  color: #fffefd;
   margin-bottom: 30px;
   font-size: 28px;
   font-weight: bold;
@@ -150,15 +155,13 @@ h1 {
   text-transform: uppercase;
 }
 
-.form-group {
-  margin-bottom: 20px;
-}
+
 
 label {
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
-  color: #333;
+  color: #060606;
   font-size: 14px;
 }
 
@@ -217,10 +220,28 @@ button:hover {
   h1 {
     font-size: 24px;
   }
+ 
+}
+.form-group-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px; 
+}
+.form-group-row .form-group {
+  flex: 1;
+  
+}
+
+.form-group-row .form-group:last-child {
+  margin-right: 0;
+}
+
+.form-group{
+  margin-bottom: 10px;
+}
 
   button {
     font-size: 14px;
     padding: 12px;
   }
-}
 </style>

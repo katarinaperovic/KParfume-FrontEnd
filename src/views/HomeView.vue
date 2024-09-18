@@ -2,7 +2,7 @@
   <div class="home">
     <div class="background"></div> 
     <div class="content">
-      <img alt="Vue logo" class="logo" src="../assets/ch1.jpg">
+     
       <FabrikeView :fabrike="fabrike" @fabrikaAdded="handleFabrikaAdded" />
     </div>
   </div>
@@ -56,13 +56,13 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  background-image: url('../assets/c.jpg');
+  background-image: url('../assets/b1.jpg');
   background-size: cover; /* Pokriva celu površinu */
   background-position: center; /* Centriranje slike */
-  background-attachment: fixed; /* Fiksiranje slike u odnosu na prozor pretraživača */
+  background-attachment:fixed; /* Fiksiranje slike u odnosu na prozor pretraživača */
   background-repeat: no-repeat; /* Sprečava ponavljanje slike */
-  min-height: 100vh;
-  opacity: 0.5;
+  min-height: 2000px;
+  opacity: 0.3;
   filter: blur(3px); 
   z-index: -1; 
 }
@@ -76,6 +76,6 @@ export default {
 
 .logo{
   max-width: 300px;
-  max-height: 300px;
+  max-height: 100px;
 }
 </style>
