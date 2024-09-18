@@ -57,9 +57,11 @@ export default {
   left: 0;
   width: 100%;
   background-image: url('../assets/c.jpg');
-  background-size: cover; 
-  height: 100%;
-  background-position: center;
+  background-size: cover; /* Pokriva celu površinu */
+  background-position: center; /* Centriranje slike */
+  background-attachment: fixed; /* Fiksiranje slike u odnosu na prozor pretraživača */
+  background-repeat: no-repeat; /* Sprečava ponavljanje slike */
+  min-height: 100vh;
   opacity: 0.5;
   filter: blur(3px); 
   z-index: -1; 

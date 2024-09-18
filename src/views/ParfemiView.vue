@@ -23,7 +23,7 @@
             "
             class="cenaUgao"
           >
-            {{ cene[parfem.id].sc_cena }} rsd
+            {{ cene[parfem.id].sc_cena }} €
           </h3>
 
           <h3 class="mililitrazaUgao">{{ parfem.par_mililitraza }}ml</h3>

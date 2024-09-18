@@ -1,6 +1,6 @@
 <template>
   <div class="payment-container">
-    <div class="total-price">Ukupan iznos: {{ totalPrice }} RSD</div>
+    <div class="total-price">Ukupan iznos: {{ totalPrice }} €</div>
     <div id="paypal-button-container" class="paypal-button-container"></div>
     <button @click="cancel" class="cancel-button">Otkazi</button>
   </div>
@@ -137,7 +137,7 @@ export default {
           kup_datum: new Date().toISOString(),
           kup_kpn_id: this.kup_kpn_id, // Add the coupon ID if applied
           kup_uk_cena: fabrikaTotalPrice, // This now includes the discount
-          kup_valuta: "RSD",
+          kup_valuta: "EUR",
           kup_status: details.status,
           kup_pp_id: paypalIntentId, // Same PayPal intent ID for all purchases
         };

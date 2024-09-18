@@ -17,7 +17,7 @@
       </div>
   
 
-    <div v-if="vestiList.length === 0" class="no-news-message">
+    <div v-if="!isCreatingNews && vestiList.length === 0" class="no-news-message">
       Trenutno nema vesti.
     </div>
 

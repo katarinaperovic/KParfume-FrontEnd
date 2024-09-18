@@ -27,10 +27,10 @@
               <p class="item-volume">
                 {{ parfemi[stavka.skrp_par_id]?.par_mililitraza }} ml
               </p>
-              <p class="item-price">Cena: {{ stavka.skrp_cena_pj }} RSD</p>
+              <p class="item-price">Cena: {{ stavka.skrp_cena_pj }} €</p>
               <p class="item-total">
                 Ukupna cena:
-                {{ stavka.skrp_kolicina * stavka.skrp_cena_pj }} RSD
+                {{ stavka.skrp_kolicina * stavka.skrp_cena_pj }} €
               </p>
             </div>
             <div class="item-quantity-controls">
@@ -54,7 +54,7 @@
             </button>
           </div>
         </div>
-        <div class="total-price">Ukupan iznos: {{ totalPrice }} RSD</div>
+        <div class="total-price">Ukupan iznos: {{ totalPrice }} €</div>
         <!-- Coupon Section -->
         <div class="coupon-section">
           <input
@@ -72,7 +72,7 @@
           plaćanje
         </button>
       </div>
-      <p v-else class="empty-cart-message">Vaša korpa je prazna</p>
+      <p v-else class="empty-cart-message">Vaša korpa je prazna.</p>
     </div>
   </div>
 </template>
@@ -422,9 +422,14 @@ export default {
 }
 
 .empty-cart-message {
-  text-align: center;
-  color: #aaa;
-  font-size: 18px;
+  color: #ccc;
+  text-align: center; 
+  font-size: 24px; 
+  position: absolute; 
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+  width: 100%; 
 }
 
 .total-price {

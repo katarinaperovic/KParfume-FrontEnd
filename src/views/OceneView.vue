@@ -46,7 +46,8 @@
         try {
           const response = await axios.get('https://localhost:44333/api/ocena');
           this.oceneList = response.data;
-
+          // Sortiranje po datumu u opadajućem redosledu
+      this.oceneList.sort((a, b) => new Date(b.ocn_dat) - new Date(a.ocn_dat));
 
  // For each ocn_kor_id, fetch the user details
  await Promise.all(
@@ -194,7 +195,7 @@
 .user-info {
   width: calc(100% + 120px); 
   margin-left: -60px; 
-  background-color: #f4f3fb;
+  background-color: #dedbf491;
   padding: 15px;
   border-radius: 0 0 10px 10px; 
   color: #944444;

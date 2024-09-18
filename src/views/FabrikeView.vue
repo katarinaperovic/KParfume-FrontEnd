@@ -119,7 +119,6 @@
     <div class="filters">
       <div class="filters-top">
         <input v-model="searchQuery" placeholder="Naziv fabrike...">
-        <input v-model="searchChocolate" placeholder="Naziv parfema...">
         <input v-model="searchLocation" placeholder="Pretraži lokaciju...">
         
         <select v-model="sortKey">
@@ -145,8 +144,8 @@
         <div class="fabrika-details">
           
           <h2><strong>{{ fabrika.fab_naziv }}</strong></h2>
-          <p> {{ fabrika.fab_adresa }}  </p>
-          <p>{{ fabrika.fab_grad }} {{ fabrika.fab_pos_br }}</p>
+          <p> {{ fabrika.fab_adresa }} ,  {{ fabrika.fab_grad }} , {{ fabrika.fab_drzava }}</p>
+          
 
           <p>Ocena: 
           <span v-if="fabrika.fab_ocena !== 0">{{ fabrika.fab_ocena }}</span>
@@ -155,6 +154,8 @@
           <button @click="prikaziDetalje(fabrika.id)">Prikaži detalje</button>
           <button @click="prikaziDetalje2(fabrika.id)">Parfemi</button>
           <button @click="toggleForm(fabrika.id)" v-if="korisnikUloga === 'menadzer' && String(korisnikFabrikaId)===String(fabrika.id)">Dodaj novi parfem</button>
+          <button @click="toggleFormRadnik(fabrika.id)" v-if="korisnikUloga === 'menadzer' && String(korisnikFabrikaId)===String(fabrika.id)">Dodaj novog radnika</button>
+          
           <div v-if="prikaziFormu[fabrika.id]" class="novi-parfem-form">
             <h3>Dodaj novi parfem</h3>
             <form @submit.prevent="dodajParfem(fabrika.id)">
@@ -223,8 +224,7 @@
             </form>
           </div>
 
-          <button @click="toggleFormRadnik(fabrika.id)" v-if="korisnikUloga === 'menadzer' && String(korisnikFabrikaId)===String(fabrika.id)">Dodaj novog radnika</button>
-          <div v-if="prikaziFormuRadnik[fabrika.id]" class="nova-cokolada-form">
+          <div v-if="prikaziFormuRadnik[fabrika.id]" class="novi-parfem-form">
             <h3>Dodaj novog radnika</h3>
             <form @submit.prevent="dodajRadnika(fabrika.id)">
               <div class="form-row">
@@ -318,7 +318,6 @@ export default {
     });
     
     const searchQuery = ref('');
-    const searchChocolate = ref('');
     const searchLocation = ref('');
     const sortKey = ref('');
     const sortOrderAsc = ref(true);
@@ -596,13 +595,7 @@ const dodajParfem = async (fabrikaId) => {
           fabrika.fab_naziv.toLowerCase().includes(searchQuery.value.toLowerCase())
         );
       }
-      if (searchChocolate.value) {
-        result = result.filter(fabrika => 
-          fabrika.cokoladeUPonudi.some(cokolada => 
-            cokolada.naziv.toLowerCase().includes(searchChocolate.value.toLowerCase()) && !cokolada.obrisano
-          )
-        );
-      }
+      
       if (searchLocation.value) {
         result = result.filter(fabrika => 
           fabrika.fab_grad.toLowerCase().includes(searchLocation.value.toLowerCase())
@@ -634,7 +627,7 @@ const dodajParfem = async (fabrikaId) => {
     });
    
     return {
-      prikaziFormu, noviParfem, searchQuery, stavkaCenovnika, searchChocolate, searchLocation, 
+      prikaziFormu, noviParfem, searchQuery, stavkaCenovnika, searchLocation, 
       sortKey, sortOrderAsc,prikaziDetalje, toggleForm, dodajParfem, filteredAndSortedFabrike,showNewFactoryDialog,novaFabrika,dodajFabriku,user,korisnikUloga,korisnikFabrikaId,
       dodajRadnika,noviRadnik,prikaziFormuRadnik,toggleFormRadnik,filterMyOnly,today,errors,onFileSelected ,onFileSelected1 ,prikaziDetalje2  }
   }
@@ -687,6 +680,7 @@ const dodajParfem = async (fabrikaId) => {
 }
 
 .fabrika-logo {
+  border-radius: 10px;
   width: 100px;
   height: 100px;
   margin-right: 10px;
@@ -696,6 +690,8 @@ const dodajParfem = async (fabrikaId) => {
   flex: 1;
   margin-right: 110px;
 }
+
+
 
 .novi-parfem-form {
   margin-top: 10px;
@@ -855,12 +851,12 @@ border-radius: 10px;
 
 .moja-fabrika-border {
   border-color: #ff9800; 
-  background-color: #fff3e0; 
+  background-color: #fdf0da; 
 }
 
 .moja-fabrika {
   border-color: #ff9800; 
-  background-color: #fff3e0; 
+  background-color: #fdf0da; 
 }
 .errors{
   color: red;

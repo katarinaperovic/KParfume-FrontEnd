@@ -2,7 +2,7 @@
   <div class="cokolade">
     <h2>Favoriti</h2>
     <span class="nemaparfema" v-if="filteredParfemi.length === 0">
-      Nemate omiljenih parfema
+      Nemate omiljenih parfema.
     </span>
     <div class="card-container">
       <div
@@ -23,7 +23,7 @@
             "
             class="cenaUgao"
           >
-            {{ cene[parfem.id].sc_cena }} rsd
+            {{ cene[parfem.id].sc_cena }} €
           </h3>
 
           <h3 class="mililitrazaUgao">{{ parfem.par_mililitraza }}ml</h3>
@@ -98,33 +98,8 @@
           </div>
 
           <div class="button-container">
-            <button
-              @click="editParfem(parfem)"
-              v-if="
-                korisnikUloga === 'menadzer' &&
-                String(korisnikFabrikaId) === String(fabrikaId)
-              "
-            >
-              Izmeni
-            </button>
-            <button
-              @click="editKolicina(parfem)"
-              v-if="
-                korisnikUloga === 'radnik' &&
-                String(korisnikFabrikaId) === String(fabrikaId)
-              "
-            >
-              Izmeni količinu
-            </button>
-            <button
-              @click="confirmDelete(parfem)"
-              v-if="
-                korisnikUloga === 'menadzer' &&
-                String(korisnikFabrikaId) === String(fabrikaId)
-              "
-            >
-              Obriši
-            </button>
+            
+            
             <button
               @click="addToCart(parfem)"
               v-if="korisnikUloga === 'kupac' && parfem.par_dostupan"
@@ -399,8 +374,14 @@ h2 {
   color: #4f2a06;
 }
 .nemaparfema {
-  color: #ddd;
-  align-content: center;
+  color: #ccc;
+  text-align: center; 
+  font-size: 24px; 
+  position: absolute; 
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+  width: 100%; 
 }
 
 .cokolada-details {

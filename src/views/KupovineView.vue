@@ -46,8 +46,11 @@
       <div v-if="filteredKupovine.length === 0">Nemate kupovina.</div>
       <div v-for="kupovina in sortedKupovine" :key="kupovina.id" class="purchase">
         <p>Datum i vreme: {{ new Date(kupovina.kup_datum).toLocaleString() }}</p>
-        <p class="ukcena">Ukupna cena: {{ kupovina.kup_uk_cena }} rsd</p>
-  
+        <p class="ukcena">Ukupna cena: {{ kupovina.kup_uk_cena }} €</p>
+        <div v-if="kupovina.kup_kpn_id !== null" class="coupon-info">
+      <p>Kupljeno sa kuponom! Iznos popusta: {{ getCouponDiscount(kupovina.kup_kpn_id) }}%</p>
+    </div>
+
         
         <span v-if="fabrike.length === 0">Nema fabrike</span>
           <div v-if="fabrike.length > 0" class="redovi">
@@ -66,9 +69,9 @@
   <div v-for="stavka in kupovina.stavkeKupovine" :key="stavka.id" class="chocolate">
     <img :src="'https://localhost:44333/resources' + getParfemInfo(stavka.sk_par_id).par_slika" class="chocolate-image" alt="Slika parfema">
     <p>Naziv: {{ getParfemInfo(stavka.sk_par_id).par_naziv }}</p>
-    <p>Cena: {{ stavka.sk_cena_pj }} rsd</p>
+    <p>Cena: {{ stavka.sk_cena_pj }} €</p>
     <p>Količina: {{ stavka.sk_kolicina }}</p>
-    <p>Ukupna cena: {{ stavka.sk_cena_pj * stavka.sk_kolicina }} rsd</p>
+    <p>Ukupna cena: {{ stavka.sk_cena_pj * stavka.sk_kolicina }} €</p>
   </div>
 </div>
 
@@ -145,8 +148,10 @@
       <div v-if="filteredKupovineMen.length === 0">Nemate kupovina.</div>
       <div v-for="kupovina in sortedKupovineMen" :key="kupovina.id" class="purchase">
         <p>Datum i vreme: {{ new Date(kupovina.kup_datum).toLocaleString() }}</p>
-        <p class="ukcena">Ukupna cena: {{ kupovina.kup_uk_cena }} rsd</p>
-  
+        <p class="ukcena">Ukupna cena: {{ kupovina.kup_uk_cena }} €</p>
+        <div v-if="kupovina.kup_kpn_id !== null" class="coupon-info">
+      <p>Kupljeno sa kuponom! Iznos popusta: {{ getCouponDiscount(kupovina.kup_kpn_id) }}%</p>
+    </div>
         
         <span v-if="users.length === 0">Nema korisnika</span>
           <div v-if="users.length > 0" class="redovi">
@@ -167,9 +172,9 @@
   <div v-for="stavka in kupovina.stavkeKupovine" :key="stavka.id" class="chocolate">
     <img :src="'https://localhost:44333/resources' + getParfemInfo(stavka.sk_par_id).par_slika" class="chocolate-image" alt="Slika parfema">
     <p>Naziv: {{ getParfemInfo(stavka.sk_par_id).par_naziv }}</p>
-    <p>Cena: {{ stavka.sk_cena_pj }} rsd</p>
+    <p>Cena: {{ stavka.sk_cena_pj }} €</p>
     <p>Količina: {{ stavka.sk_kolicina }}</p>
-    <p>Ukupna cena: {{ stavka.sk_cena_pj * stavka.sk_kolicina }} rsd</p>
+    <p>Ukupna cena: {{ stavka.sk_cena_pj * stavka.sk_kolicina }} €</p>
   </div>
 </div>
 
@@ -195,6 +200,7 @@
   checkLoginStatus();  
   
   const korisnik = ref(null);
+  const kuponi = ref([]);
   const errorMessage = ref('');
   const successMessage = ref('');
   const korisnikIme = ref('');
@@ -219,8 +225,8 @@
   });
   
   const sortCriteria = ref({
-    field: 'cena',
-    order: 'asc',
+    field: 'datumVreme', 
+  order: 'desc',
   });
   
   
@@ -385,6 +391,21 @@ const hasReview = (kupovinaId) => {
     showCommentForms.value[kupovinaId] = !showCommentForms.value[kupovinaId];
   };
   
+  const getSveKupone = async () => {
+  try {
+    const response = await axios.get(`https://localhost:44333/api/kupon`);
+    kuponi.value = response.data;
+  } catch (error) {
+    errorMessage.value = 'An error occurred while fetching coupon data.';
+  }
+};
+
+const getCouponDiscount = (kuponId) => {
+  const kupon = kuponi.value.find(k => String(k.id) === String(kuponId));
+  return kupon ? kupon.kpn_popust : 0; // Vraća popust ako postoji, inače 0
+};
+
+
   const submitComment = async (kupovinaId) => {
     if (!rating.value[kupovinaId] || rating.value[kupovinaId] <= 0) {
       commentError.value[kupovinaId] = 'Morate ostaviti ocenu da biste poslali komentar.';
@@ -433,6 +454,7 @@ const hasReview = (kupovinaId) => {
   await getSveFabrike();  
   await getSviUseri();  
   await getSveParfemi();  
+  await getSveKupone();
   getKupovine();  
   await getSveRecenzije();  
 });
@@ -528,6 +550,7 @@ form {
 }
 
 .purchase {
+  position: relative;
   border-bottom: 1px solid #ddd;
   padding-bottom: 15px;
   margin-bottom: 15px;
@@ -536,6 +559,18 @@ form {
   padding: 15px;
 }
 
+.coupon-info {
+  position: absolute;
+  top: 10px; 
+  right: 10px; 
+  background-color: #ffd700; 
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: #333;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 .chocolates-container {
   display: flex;
   overflow-x: auto;

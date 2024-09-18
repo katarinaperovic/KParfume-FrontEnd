@@ -42,16 +42,17 @@ const filteredKomentari = computed(() => {
   if (authState.korisnikUloga === 'kupac' || authState.korisnikUloga === 'radnik' || authState.isLoggedIn === false) {
     return komentari.value.filter((komentar) => komentar.rec_status === 1);
   } else if (
-    authState.korisnikUloga === 'menadzer' ||
+    (authState.korisnikUloga === 'menadzer' && korisnik.value && String(korisnik.value.kor_fab_id) === String(props.fabrikaId)) ||
     authState.korisnikUloga === 'administrator'
   ) {
     return komentari.value.filter(
-      (komentar) => komentar.rec_status === 1 ||komentar.rec_status===2
+      (komentar) => komentar.rec_status === 1 || komentar.rec_status === 2
     );
   } else {
     return [];
   }
 });
+
 
 onMounted(() => {
   korisnik.value = authState.korisnik;

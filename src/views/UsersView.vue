@@ -17,10 +17,10 @@
       <button @click="sortBy('kor_email')">{{ sortButtonLabel('emailu') }}</button>
     </div>
 
-    <!-- No users found message -->
+    
     <span v-if="filteredAndSortedKorisnici.length === 0" class="no-users">Nema korisnika</span>
 
-    <!-- User list section -->
+    
     <div class="user-list">
       <div v-for="k in filteredAndSortedKorisnici" :key="k.id" class="user-card">
         <div class="user-info">
@@ -33,6 +33,9 @@
           <p><strong>Prezime:</strong> {{ k.kor_prezime }}</p>
          
           <p v-if="String(k.kor_uloga) === '3'"><strong>Kompanija:</strong> {{ k.kor_ime_kompanije }}</p>
+          <p v-if="String(k.kor_uloga) === '1' && users[k.kor_fab_id]"><strong>Fabrika:</strong> {{ users[k.kor_fab_id].fab_naziv }}</p>
+          <p v-if="String(k.kor_uloga) === '2' && users[k.kor_fab_id]"><strong>Fabrika:</strong> {{ users[k.kor_fab_id].fab_naziv }}</p>
+
           
         </div>
       </div>
@@ -52,7 +55,7 @@ const filterUloga = ref('');
 const sortOrder = ref('asc');
 const sortKey = ref('');
 const korisnikId = ref('');
-
+const users=ref({});
 onMounted(() => {
   const korisnik = JSON.parse(localStorage.getItem('korisnik'));
   korisnikId.value = korisnik ? korisnik.id : '';
@@ -63,6 +66,17 @@ async function loadKorisnici() {
   try {
     const response = await axios.get('https://localhost:44333/api/users');
     korisnici.value = response.data.filter(k => String(k.id) !== String(korisnikId.value));
+    await Promise.all(
+  korisnici.value.map(async (korisnik) => {
+    if (!users.value[korisnik.kor_fab_id]) { // change this.users to users.value
+      const userResponse = await axios.get(
+        `https://localhost:44333/api/fabrika/${korisnik.kor_fab_id}`
+      );
+      users.value[korisnik.kor_fab_id] = userResponse.data; // adjust this line
+    }
+  })
+);
+
   } catch (error) {
     console.error('Greška prilikom učitavanja korisnika:', error);
   }
