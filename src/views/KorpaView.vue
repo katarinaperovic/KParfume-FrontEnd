@@ -72,7 +72,7 @@
           plaćanje
         </button>
       </div>
-      <p v-else class="empty-cart-message">Vaša korpa je prazna.</p>
+      <p v-else class="empty-cart-message">Vaša korpa je prazna</p>
     </div>
   </div>
 </template>

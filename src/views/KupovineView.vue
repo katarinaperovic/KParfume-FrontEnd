@@ -77,7 +77,8 @@
 
       
       <div v-if="!hasReview(kupovina.id)">
-  <button @click="showCommentForm(kupovina.id)" class="btn">Ostavi komentar</button>
+  <button v-if="!showCommentForms[kupovina.id]" @click="showCommentForm(kupovina.id)" class="btn">Ostavi komentar</button>
+        
   <div v-if="showCommentForms[kupovina.id]" class="comment-form">
     <textarea v-model="commentText[kupovina.id]" placeholder="Ostavite komentar"></textarea>
     <div>
@@ -145,7 +146,7 @@
   
   <!-- Prikaz kupovina -->
   <div v-if="korisnik.kor_uloga === 'menadzer'" class="purchase-section">
-      <div v-if="filteredKupovineMen.length === 0">Nemate kupovina.</div>
+      <div v-if="filteredKupovineMen.length === 0">Nema kupovina.</div>
       <div v-for="kupovina in sortedKupovineMen" :key="kupovina.id" class="purchase">
         <p>Datum i vreme: {{ new Date(kupovina.kup_datum).toLocaleString() }}</p>
         <p class="ukcena">Ukupna cena: {{ kupovina.kup_uk_cena }} €</p>

@@ -749,8 +749,14 @@ h2 {
   color: #4f2a06;
 }
 .nemaparfema {
-  color: #ddd;
-  align-content: center;
+  color: #ccc;
+  text-align: center; 
+  font-size: 24px; 
+  position: absolute; 
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+  width: 100%; 
 }
 
 .cokolada-details {
@@ -925,7 +931,7 @@ h2 {
 }
 .opis {
   font-size: 18px !important;
-  color: #a50404 !important;
+  color: #101010 !important;
   font-style: normal !important;
   margin: 10px 0 !important;
   font-weight: normal !important;

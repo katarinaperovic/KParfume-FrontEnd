@@ -1,6 +1,6 @@
 <template>
     <div class="vesti-view">
-        <button class="create-news-btn" @click="openCreateNewsForm" v-show="korisnikUloga==='administrator'">Kreiraj vest</button>
+        <button v-if="!isCreatingNews" class="create-news-btn" @click="openCreateNewsForm" v-show="korisnikUloga==='administrator'">Kreiraj vest</button>
 
   
       <div v-if="isCreatingNews" class="create-news-form">
@@ -185,6 +185,7 @@
   } 
   .custom-file-input {
   display: flex;
+  width: 100%;
   align-items: center;
   padding: 10px;
   border: 1px solid #ccc;

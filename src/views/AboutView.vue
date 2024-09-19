@@ -23,7 +23,7 @@
       </div>
       <div class="form-group">
         <label for="kor_prezime">Prezime:</label>
-        <input type="text" id="kor_prezime" v-model="korisnik.kor_prezime" required pattern="[A-Za-z ]+" title="Molimo unesite samo slova">
+        <input type="text" id="kor_prezime" v-model="korisnik.kor_prezime" required >
       </div></div>
 
       <div >
@@ -148,7 +148,7 @@ export default {
 h1 {
   text-align: center;
   color: #fffefd;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   font-size: 28px;
   font-weight: bold;
   letter-spacing: 1.5px;

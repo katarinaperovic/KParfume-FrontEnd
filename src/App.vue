@@ -470,7 +470,7 @@ body {
 ::-webkit-scrollbar-thumb {
   background-color: transparent;
   border-radius: 10px;
-  border: 1px solid #f1f1f18e;
+  border: 1px solid #090909;
 }
 
 ::-webkit-scrollbar {

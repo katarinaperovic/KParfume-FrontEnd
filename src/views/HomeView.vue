@@ -45,10 +45,9 @@ export default {
 
 <style>
 .home {
-  position: relative; 
-  overflow: hidden; 
-  
- 
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
 }
 
 .background {
@@ -56,23 +55,30 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
+  height: 100%; 
   background-image: url('../assets/b1.jpg');
-  background-size: cover; /* Pokriva celu površinu */
-  background-position: center; /* Centriranje slike */
-  background-attachment:fixed; /* Fiksiranje slike u odnosu na prozor pretraživača */
-  background-repeat: no-repeat; /* Sprečava ponavljanje slike */
-  min-height: 2000px;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   opacity: 0.3;
-  filter: blur(3px); 
-  z-index: -1; 
+  filter: blur(3px);
+  z-index: -1;
 }
 
 .content {
-  position: relative; 
-  z-index: 1; 
-  color: black; 
-  
+  position: relative;
+  z-index: 1;
+  color: black;
+  min-height: 100vh; 
 }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 
 .logo{
   max-width: 300px;

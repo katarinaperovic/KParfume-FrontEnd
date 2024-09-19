@@ -4,7 +4,7 @@
     <table class="modern-table">
       <thead>
         <tr>
-          <th>Izvestaj</th>
+          <th>Izveštaj</th>
           <th>Datum</th>
           <th></th>
         </tr>
@@ -24,14 +24,14 @@
           </td>
         </tr>
         <tr v-if="izvestaji.length === 0">
-          <td colspan="3">No Izvestaji found.</td>
+          <td colspan="3">Nema generisanih izveštaja.</td>
         </tr>
       </tbody>
     </table>
 
     <!-- Button to generate a new Izvestaj -->
     <button @click="generateNewIzvestaj" class="generate-btn">
-      Generisi Novi Izvestaj
+      Generiši novi izveštaj
     </button>
   </div>
 </template>

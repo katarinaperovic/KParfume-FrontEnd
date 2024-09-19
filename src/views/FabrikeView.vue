@@ -8,7 +8,7 @@
     <div v-if="showNewFactoryDialog" class="modal-overlay" @click.self="showNewFactoryDialog = false">
       <div class="modal-content">
         <h3>Dodaj novu fabriku</h3>
-        <form @submit.prevent="dodajFabriku">
+        <form class="nfab" @submit.prevent="dodajFabriku">
           <div class="form-row1">
             <div class="input-group">
               <label>Naziv:</label>
@@ -78,7 +78,7 @@
         </div>
         <div class="form-group">
           <label for="prezime">Prezime:</label>
-          <input type="text" id="prezime" v-model="user.kor_prezime" required pattern="[A-Za-z ]+" title="Molimo unesite samo slova">
+          <input type="text" id="prezime" v-model="user.kor_prezime" required>
         </div>
         <div class="form-group">
           <label for="ulica">Ulica i broj:</label>
@@ -217,7 +217,7 @@
                   <label>Slika:</label>
                   
                   
-            <input type="file" @change="onFileSelected1" accept="image/*" required>
+            <input class="cs" type="file" @change="onFileSelected1" accept="image/*" required>
                 </div>
               </div>
               <button type="submit">Dodaj parfem</button>
@@ -244,7 +244,7 @@
                 </div>
                 <div class="form-group">
                   <label>Prezime:</label>
-                  <input v-model="noviRadnik.kor_prezime" required pattern="[A-Za-z ]+" title="Molimo unesite samo slova">
+                  <input v-model="noviRadnik.kor_prezime" required>
                 </div>
                 
               </div>
@@ -293,6 +293,8 @@ import axios from 'axios';
 import { ref, computed,provide,onMounted,router } from 'vue';
 import { useRouter } from 'vue-router';
 import HomeView from './HomeView.vue';
+import toastr from "toastr";
+import "toastr/build/toastr.min.css";
 
 export default {
   name: 'FabrikeView',
@@ -508,7 +510,7 @@ const dodajParfem = async (fabrikaId) => {
       // StavkaCenovnika 
       console.log("Stavka cenovnika je", stavkaCenovnika.value);
       await axios.post('https://localhost:44333/api/stavka-cenovnika', stavkaCenovnika.value);
-
+      toastr.success("Parfem je uspešno dodat!");
       // Reset form after successful addition
       toggleForm(fabrikaId);
       noviParfem.value = {
@@ -549,7 +551,7 @@ const dodajParfem = async (fabrikaId) => {
 
       axios.post('https://localhost:44333/api/users/register', noviRadnikData)
         .then(response => {
-          alert('Radnik uspešno dodat');
+          toastr.success("Radnik je uspešno registrovan!");
           toggleFormRadnik(fabrikaId);
         })
         .catch(error => console.error(error));
@@ -733,6 +735,7 @@ const dodajParfem = async (fabrikaId) => {
   border-radius: 5px;
   width: calc(100% - 16px); 
   background-color: #fff;
+  color: #020101;
 }
 
 .fabrika-item button {
@@ -791,6 +794,10 @@ border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+.modal-content h3{
+  color: #020101;
+}
+
 .form-row1 {
   display: flex;
   justify-content: space-between;
@@ -845,7 +852,7 @@ border-radius: 10px;
   border: none;
   border-radius: 5px;
   background-color: #ca7219;
-  color: white;
+  color: rgb(255, 255, 255);
   cursor: pointer;
   margin-left: 5px;
   margin-right: 5px;
@@ -859,10 +866,15 @@ border-radius: 10px;
 
 .moja-fabrika {
   border-color: #ff9800; 
-  background-color: #8d6b16; 
+  background-color: #8d6b16a7; 
+  
 }
 .errors{
   color: red;
+}
+
+.nfab{
+  color: #020101 !important;
 }
 
 </style>

@@ -2,7 +2,7 @@
   <div class="cokolade">
     <h2>Favoriti</h2>
     <span class="nemaparfema" v-if="filteredParfemi.length === 0">
-      Nemate omiljenih parfema.
+      Nemate omiljenih parfema
     </span>
     <div class="card-container">
       <div

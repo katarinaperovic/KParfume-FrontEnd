@@ -2,7 +2,7 @@
   <div class="payment-container">
     <div class="total-price">Ukupan iznos: {{ totalPrice }} €</div>
     <div id="paypal-button-container" class="paypal-button-container"></div>
-    <button @click="cancel" class="cancel-button">Otkazi</button>
+    <button @click="cancel" class="cancel-button">Otkaži</button>
   </div>
 </template>
 
@@ -183,7 +183,7 @@ export default {
           `https://localhost:44333/api/stavka-korpe/user/${this.korisnikId}`
         )
         .then(() => {
-          toastr.success("Kupovina uspesna!");
+          toastr.success("Kupovina uspešna!");
           this.$router.push("/"); // Redirect to home page or any other desired page
         })
         .catch((error) => {
