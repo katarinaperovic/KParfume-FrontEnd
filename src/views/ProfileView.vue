@@ -27,7 +27,7 @@
         </div>
         <div class="input-group">
           <label for="prezime">Prezime:</label>
-          <input type="text" v-model="korisnik.kor_prezime" required pattern="[A-Za-z ]+" title="Molimo unesite samo slova" />
+          <input type="text" v-model="korisnik.kor_prezime" required  />
         </div>
       </div>
       <div class="input-row">
